@@ -28,6 +28,12 @@ header{
     justify-content: center;
 }
 
+.section1 nav{
+    right: 0;
+    left: 0;
+    position: absolute;
+}
+
 .section1{
     display: inline-flex;
     height: fit-content;
@@ -107,7 +113,6 @@ overflow-y: scroll;
 .news_sec_d{
     margin-top: 80px;
     position: relative;
-
 }
 
 .ideas_sec{

@@ -3,10 +3,14 @@ body{
     margin: 0px;
     background-color: rgb(97, 97, 97);
     font-family: 'Ubuntu', sans-serif;
-    display: block;
-    justify-content: flex-start;
+    /* display: block; */
+    justify-content: center;
     zoom: 90%;
     overflow-x: hidden;
+}
+
+body .news_sec_d{
+    justify-content: flex-start;
 }
 
 main{
@@ -29,6 +33,7 @@ header{
     height: 90px;
     display: flex;
     justify-content: center;
+    zoom: 80%;
 }
 
 .section1{
@@ -37,6 +42,7 @@ header{
     width: fit-content;
     position: relative;
     margin-top: 10px;
+    flex-flow: column;
 }
 
 .title{
@@ -59,17 +65,6 @@ position: relative;
     -moz-transition: all 0.3s ease;;
     -o-transition: all 0.3s ease;;
     transition: all 0.3s ease;
-}
-
-.lite{
-    font-size: 16px;
-    position: absolute;
-    height: 90px;
-    text-align: center;
-    width: fit-content;
-    display: flex;
-    margin-left: 25px;
-    font-weight: 500;
 }
 
 .lite a{
@@ -108,11 +103,9 @@ overflow-y: scroll;
 }
 
 .news_sec_d{
-    margin-top: 960px;
+    margin-top: 150px;
     position: relative;
     zoom: 53%;
-margin-left: 60px;
-margin-bottom: 60px;
 }
 
 .ideas_sec{
@@ -120,7 +113,6 @@ margin-bottom: 60px;
 height: 700px;
 background-color: #697cd7;
 margin-top: 3px;
-/* margin-right: 170px; */
 flex-flow:column;
 overflow-y: scroll;
 position: relative;
@@ -232,10 +224,10 @@ position: relative;
 }
 
 .ideas_sec_d{
-    margin-top: 150px;
-    position: absolute;
+    margin-top: 100px;
+    position: relative;
     /* left: -1035px; */
-    margin-left: 60px;
+    /* margin-left: 60px; */
     zoom: 53%;
 }
 
@@ -302,7 +294,6 @@ footer{
 background: rgb(73, 73, 73);
 width: auto;
 height: 90px;
-margin-bottom: 35px;
 }
 
 .ids_sec_scroll_pan{
