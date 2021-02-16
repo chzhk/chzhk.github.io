@@ -411,11 +411,15 @@ margin-bottom: 25px;
     margin-bottom: 25px;
 }
 
+.nwidandW_a{
+    text-decoration: none;
+}
+
 .footer_title{
     text-align: center;
-    width: max-content;
-    margin: auto;
-    height: min-content;
+    width: fit-content;
+margin: auto;
+    height: fit-content;
     font-weight: 500;
 font-size: 18px;
 position: relative;
