@@ -1,0 +1,23 @@
+body {
+    background-color: rgb(221, 221, 221);
+    padding: 0;
+    margin: 0;
+    font-family: 'Ubuntu', sans-serif;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    display: none;
+}
+
+.smartfones {
+    display: block;
+    height: 100%;
+    width: 500px;
+    color: rgb(109, 109, 109);
+    font-size: 30px;
+    margin-top: 45%;
+}
