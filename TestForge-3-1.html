@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuizForge — конструктор тестов</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%9D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto-mono/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/material-symbols-outlined/index.css">
+<style>
+/* ============ Material Design tokens ============ */
+:root{
+  --primary:#6750A4;--on-primary:#FFFFFF;--primary-container:#EADDFF;--on-primary-container:#21005D;
+  --secondary-container:#E8DEF8;--on-secondary-container:#1D192B;
+  --tertiary-container:#FFD8E4;--on-tertiary-container:#31111D;
+  --surface:#FAF7FD;--surface-2:#F3EDF7;--surface-3:#EAE3EF;--card:#FFFFFF;
+  --on-surface:#1D1B20;--on-surface-var:#49454F;
+  --outline:#79747E;--outline-var:#CBC4D0;
+  --error:#B3261E;--error-container:#F9DEDC;--on-error-container:#410E0B;
+  --success:#2E6B34;--success-container:#C8F0C6;--on-success-container:#0B3A12;
+  --warn:#7A5900;--warn-container:#FFE08B;--on-warn-container:#4A3800;
+  --snack-bg:#322F35;--snack-fg:#F5EFF7;--field-label:#FFFFFF;
+  --elev1:0 1px 2px rgba(20,10,40,.16),0 1px 3px 1px rgba(20,10,40,.08);
+  --elev2:0 1px 2px rgba(20,10,40,.16),0 4px 10px 2px rgba(20,10,40,.10);
+  color-scheme:light;
+}
+html[data-theme="dark"]{
+  --primary:#D0BCFF;--on-primary:#381E72;--primary-container:#4F378B;--on-primary-container:#EADDFF;
+  --secondary-container:#4A4458;--on-secondary-container:#E8DEF8;
+  --tertiary-container:#633B48;--on-tertiary-container:#FFD8E4;
+  --surface:#131018;--surface-2:#1D1A22;--surface-3:#28242E;--card:#1D1A22;
+  --on-surface:#E6E0E9;--on-surface-var:#CAC4D0;
+  --outline:#938F99;--outline-var:#4A4550;
+  --error:#F2B8B5;--error-container:#8C1D18;--on-error-container:#F9DEDC;
+  --success:#8CD99A;--success-container:#123B16;--on-success-container:#C8F0C6;
+  --warn:#E8C46B;--warn-container:#4A3800;--on-warn-container:#FFE08B;
+  --snack-bg:#E6E0E9;--snack-fg:#1D1B20;--field-label:#1D1A22;
+  --elev1:0 1px 2px rgba(0,0,0,.5),0 1px 3px 1px rgba(0,0,0,.28);
+  --elev2:0 1px 2px rgba(0,0,0,.5),0 4px 10px 2px rgba(0,0,0,.32);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Roboto,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--surface);color:var(--on-surface);transition:background .25s,color .25s;min-height:100vh}
+[hidden]{display:none!important}
+h1,h2,h3,p{margin:0}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.msi{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:22px;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;display:inline-block;vertical-align:middle;font-feature-settings:'liga';-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;user-select:none}
+.spacer{flex:1}
+
+/* ============ App bar ============ */
+.appbar{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--surface) 80%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--outline-var)}
+.appbar-inner{max-width:1120px;margin:auto;display:flex;align-items:center;gap:4px;padding:8px 16px}
+.brand{display:flex;align-items:center;gap:9px;user-select:none}
+.brand .msi{font-size:27px;color:var(--primary);font-variation-settings:'FILL' 1,'wght' 500}
+.brand b{font-size:19px;font-weight:700;letter-spacing:.2px}
+.appbar-sep{color:var(--outline);margin:0 2px;visibility:hidden}
+.appbar-title{font-size:15.5px;font-weight:500;color:var(--on-surface-var);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:40vw}
+.appbar-actions{display:flex;align-items:center;gap:2px}
+
+/* ============ Buttons ============ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;height:44px;padding:0 22px;border-radius:22px;font:500 14.5px/1 Roboto,sans-serif;letter-spacing:.15px;cursor:pointer;transition:box-shadow .18s,transform .12s,background .18s,filter .18s;user-select:none}
+.btn .msi{font-size:20px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn-filled{background:var(--primary);color:var(--on-primary);box-shadow:var(--elev1)}
+.btn-filled:hover{box-shadow:var(--elev2);filter:brightness(1.06)}
+.btn-tonal{background:var(--secondary-container);color:var(--on-secondary-container)}
+.btn-tonal:hover{filter:brightness(1.05);box-shadow:var(--elev1)}
+.btn-outlined{background:transparent;border:1px solid var(--outline-var);color:var(--primary)}
+.btn-outlined:hover{background:color-mix(in srgb,var(--primary) 8%,transparent)}
+.btn-text{background:transparent;color:var(--primary);padding:0 14px}
+.btn-text:hover{background:color-mix(in srgb,var(--primary) 10%,transparent)}
+.btn.sm{height:36px;padding:0 16px;border-radius:18px;font-size:13px}
+.btn.sm .msi{font-size:18px}
+.btn.danger{color:var(--error)}
+.btn-filled.danger{background:var(--error);color:var(--on-error-container)}
+.icon-btn{width:42px;height:42px;border-radius:50%;display:inline-grid;place-items:center;border:none;background:transparent;color:var(--on-surface-var);cursor:pointer;transition:background .15s;flex:none}
+.icon-btn:hover{background:color-mix(in srgb,var(--on-surface) 9%,transparent)}
+.icon-btn .msi{font-size:22px}
+.icon-btn.danger{color:var(--error)}
+.icon-btn.disabled{opacity:.35;pointer-events:none}
+
+/* ripple */
+.ripple{position:relative;overflow:hidden}
+.ripple-ink{position:absolute;border-radius:50%;background:currentColor;opacity:.16;transform:scale(0);animation:ripple .55s ease-out forwards;pointer-events:none}
+@keyframes ripple{to{transform:scale(1);opacity:0}}
+
+/* ============ Chips ============ */
+.chip{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 12px;border-radius:9px;background:var(--surface-3);color:var(--on-surface-var);font-size:12.5px;font-weight:500;user-select:none}
+.chip .msi{font-size:15px}
+.chip.score.good{background:var(--success-container);color:var(--on-success-container)}
+.chip.score.mid{background:var(--warn-container);color:var(--on-warn-container)}
+.chip.score.bad{background:var(--error-container);color:var(--on-error-container)}
+.chip.timer{background:var(--primary-container);color:var(--on-primary-container);font-weight:700;font-variant-numeric:tabular-nums}
+.chip.timer.low{background:var(--error-container);color:var(--on-error-container);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.55}}
+.chip-f{cursor:pointer;border:none;height:34px;padding:0 16px;border-radius:10px;background:transparent;color:var(--on-surface-var);font:500 13.5px Roboto,sans-serif;transition:.15s}
+.chip-f:hover{background:color-mix(in srgb,var(--on-surface) 8%,transparent)}
+.chip-f.active{background:var(--secondary-container);color:var(--on-secondary-container)}
+
+/* ============ Fields (Material outlined) ============ */
+.field{position:relative;min-width:0}
+.field input,.field textarea{width:100%;background:transparent;color:var(--on-surface);border:1px solid var(--outline);border-radius:12px;padding:15px 14px;font:400 15px Roboto,sans-serif;outline:none;transition:border-color .15s,box-shadow .15s;resize:vertical}
+.field input:hover,.field textarea:hover{border-color:var(--on-surface-var)}
+.field input:focus,.field textarea:focus{border-color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary)}
+.field label{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--on-surface-var);padding:0 6px;background:var(--field-label,var(--surface));pointer-events:none;border-radius:6px;transition:all .15s;white-space:nowrap;max-width:calc(100% - 28px);overflow:hidden;text-overflow:ellipsis}
+.field textarea~label{top:17px;transform:none}
+.field input:focus~label,.field input:not(:placeholder-shown)~label,
+.field textarea:focus~label,.field textarea:not(:placeholder-shown)~label{top:0;font-size:12px;color:var(--primary)}
+.editor-meta,.q-card,.quiz-card,.result-hero,.review-item,.dialog{--field-label:var(--card)}
+
+/* ============ Material switch ============ */
+.switch-row{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;font-size:14px;color:var(--on-surface-var)}
+.switch{position:relative;width:46px;height:26px;flex:none;display:inline-block}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:2}
+.switch .track{position:absolute;inset:0;border-radius:13px;background:var(--surface-3);border:2px solid var(--outline);transition:.2s}
+.switch .track::after{content:'';position:absolute;left:4px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--outline);transition:all .2s cubic-bezier(.2,0,0,1)}
+.switch input:checked+.track{background:var(--primary);border-color:var(--primary)}
+.switch input:checked+.track::after{left:18px;top:1px;width:20px;height:20px;background:var(--on-primary)}
+
+/* ============ Layout / views ============ */
+main{max-width:1120px;margin:0 auto;padding:22px 16px 110px}
+.view{display:none}
+.view.active{display:block;animation:viewIn .3s cubic-bezier(.2,0,0,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ============ Home ============ */
+.home-hero h1{font-size:30px;font-weight:700}
+.hero-sub{color:var(--on-surface-var);margin:8px 0 16px;max-width:640px;line-height:1.5;font-size:15px}
+.stats-row{display:flex;gap:10px;flex-wrap:wrap}
+.stat{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:14px;background:var(--surface-2);color:var(--on-surface-var);font-size:13.5px}
+.stat .msi{color:var(--primary);font-size:19px}
+.stat b{color:var(--on-surface);font-size:15px}
+.home-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:22px 0 16px}
+.chipset{display:flex;gap:6px;flex-wrap:wrap}
+.search-field{width:270px;max-width:100%}
+.search-field input{padding-left:42px}
+.search-field .s-ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--on-surface-var);font-size:20px;pointer-events:none}
+.search-field label{left:38px}
+.search-field input:focus~label,.search-field input:not(:placeholder-shown)~label{left:10px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.test-card{background:var(--card);border:1px solid var(--outline-var);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:13px;box-shadow:var(--elev1);transition:box-shadow .2s,transform .2s;animation:viewIn .3s}
+.test-card:hover{box-shadow:var(--elev2);transform:translateY(-2px)}
+.tc-top{display:flex;gap:13px;align-items:flex-start}
+.tc-avatar{width:46px;height:46px;flex:none;border-radius:14px;background:var(--primary-container);color:var(--on-primary-container);display:grid;place-items:center}
+.tc-avatar.imp{background:var(--tertiary-container);color:var(--on-tertiary-container)}
+.tc-avatar .msi{font-size:24px}
+.tc-title h3{font-size:17px;font-weight:600;line-height:1.35;margin-bottom:3px}
+.tc-title p{font-size:13.5px;color:var(--on-surface-var);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tc-chips{display:flex;gap:7px;flex-wrap:wrap}
+.tc-date{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--on-surface-var)}
+.tc-date .msi{font-size:15px}
+.tc-actions{display:flex;gap:8px;align-items:center;border-top:1px solid var(--outline-var);padding-top:13px;margin-top:auto}
+.tc-actions .icon-btn{margin-left:auto}
+.tc-actions .icon-btn+.icon-btn{margin-left:0}
+.empty{text-align:center;padding:44px 16px;display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--on-surface-var)}
+.empty img{width:min(280px,72vw);border-radius:24px;box-shadow:var(--elev1)}
+.empty h3{color:var(--on-surface);font-size:20px}
+.empty p{max-width:420px;line-height:1.5;font-size:14.5px}
+.empty .btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* ============ FAB ============ */
+.fab{position:fixed;right:22px;bottom:22px;z-index:50;display:none;align-items:center;gap:10px;height:58px;padding:0 24px 0 20px;border-radius:18px;border:none;background:var(--primary-container);color:var(--on-primary-container);font:500 15px Roboto,sans-serif;box-shadow:var(--elev2);cursor:pointer;transition:box-shadow .2s,transform .15s}
+.fab:hover{box-shadow:var(--elev2),0 6px 18px rgba(0,0,0,.18);transform:translateY(-2px)}
+.fab .msi{font-size:26px}
+body[data-view="home"] .fab{display:inline-flex}
+
+/* ============ Editor ============ */
+.editor-wrap{max-width:840px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.editor-meta{display:flex;flex-direction:column;gap:14px;background:var(--card);border:1px solid var(--outline-var);border-radius:20px;padding:20px;box-shadow:var(--elev1)}
+.editor-settings{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--outline-var)}
+.time-field{width:260px}
+.q-card{background:var(--card);border:1px solid var(--outline-var);border-radius:20px;padding:18px;box-shadow:var(--elev1);display:flex;flex-direction:column;gap:14px;animation:viewIn .3s}
+.q-head{display:flex;align-items:center;gap:10px}
+.q-num{width:30px;height:30px;flex:none;border-radius:10px;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font-weight:700;font-size:15px}
+.q-kind{font-size:12.5px;color:var(--on-surface-var);background:var(--surface-3);padding:5px 11px;border-radius:8px;display:inline-flex;align-items:center;gap:5px}
+.q-kind .msi{font-size:14px}
+.q-img-prev{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.q-img-prev img{max-height:140px;max-width:230px;border-radius:12px;object-fit:cover;border:1px solid var(--outline-var)}
+.q-img-btns{display:flex;gap:8px;flex-wrap:wrap}
+.q-img-empty{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.url-field{flex:1;min-width:220px}
+.a-row{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.a-row:last-child{margin-bottom:0}
+.a-field{flex:1}
+.correct-toggle{width:36px;height:36px;flex:none;border-radius:50%;border:2px solid var(--outline);background:transparent;color:transparent;display:grid;place-items:center;cursor:pointer;transition:.15s}
+.correct-toggle .msi{font-size:20px}
+.correct-toggle:hover{border-color:var(--success);background:color-mix(in srgb,var(--success) 12%,transparent)}
+.correct-toggle.on{background:var(--success);border-color:var(--success);color:#fff}
+html[data-theme="dark"] .correct-toggle.on{color:#0B3A12}
+.q-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.q-hint{font-size:12.5px;color:var(--on-surface-var);display:flex;gap:6px;align-items:center;flex:1;min-width:220px;line-height:1.4}
+.q-hint .msi{font-size:16px;flex:none}
+.add-q-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:17px;border:2px dashed var(--outline-var);border-radius:18px;background:transparent;color:var(--primary);font:500 15px Roboto,sans-serif;cursor:pointer;transition:.15s}
+.add-q-btn:hover{background:color-mix(in srgb,var(--primary) 8%,transparent);border-color:var(--primary)}
+.no-q{display:flex;align-items:center;justify-content:center;gap:10px;padding:26px;border:2px dashed var(--outline-var);border-radius:18px;color:var(--on-surface-var);font-size:14.5px}
+.editor-actions{position:sticky;bottom:14px;display:flex;gap:10px;justify-content:flex-end;padding:12px 16px;background:color-mix(in srgb,var(--card) 86%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:18px;box-shadow:var(--elev2);border:1px solid var(--outline-var);z-index:5}
+
+/* ============ Quiz ============ */
+.quiz-wrap{max-width:780px;margin:0 auto}
+.quiz-status{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 2px 12px;flex-wrap:wrap}
+.quiz-counter{font-weight:500;color:var(--on-surface-var);font-size:14px}
+.quiz-status-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lprog{height:6px;border-radius:3px;background:var(--surface-3);overflow:hidden;margin-bottom:20px}
+.lprog i{display:block;height:100%;background:var(--primary);border-radius:3px;transition:width .45s cubic-bezier(.2,0,0,1)}
+.quiz-card{background:var(--card);border:1px solid var(--outline-var);border-radius:24px;padding:24px;box-shadow:var(--elev1)}
+.q-media{margin-bottom:18px;border-radius:16px;overflow:hidden;background:var(--surface-2);display:flex;justify-content:center;border:1px solid var(--outline-var)}
+.q-media img{max-height:340px;max-width:100%;object-fit:contain;display:block}
+.q-media.sm img{max-height:210px}
+.img-broken{padding:26px 34px;display:flex;align-items:center;gap:10px;color:var(--on-surface-var);font-size:14px}
+.q-title{font-size:21px;line-height:1.45;font-weight:500;margin-bottom:18px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;padding:14px 16px;border:1.5px solid var(--outline-var);border-radius:14px;background:transparent;cursor:pointer;transition:.15s;font-size:15px;color:var(--on-surface);user-select:none}
+.opt:hover{background:color-mix(in srgb,var(--on-surface) 5%,transparent)}
+.opt .ind{width:22px;height:22px;flex:none;border:2px solid var(--on-surface-var);border-radius:50%;display:grid;place-items:center;transition:.15s}
+.opts.multi .opt .ind{border-radius:6px}
+.opt .ind .msi{font-size:15px;color:transparent;transition:.12s}
+.opt.sel{border-color:var(--primary);background:var(--primary-container)}
+.opt.sel .ind{border-color:var(--primary);background:var(--primary)}
+.opt.sel .ind .msi{color:var(--on-primary)}
+.quiz-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;flex-wrap:wrap}
+.quiz-dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;flex:1}
+.quiz-dots .dot{width:8px;height:8px;border-radius:4px;background:var(--outline-var);transition:.25s}
+.quiz-dots .dot.done{background:var(--primary);opacity:.5}
+.quiz-dots .dot.cur{background:var(--primary);width:24px}
+
+/* ============ Results ============ */
+.results-wrap{max-width:860px;margin:0 auto}
+.result-hero{display:flex;gap:30px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--outline-var);border-radius:24px;padding:28px;box-shadow:var(--elev1)}
+.ring-wrap{position:relative;width:180px;height:180px;flex:none;margin:auto}
+.ring-bg{fill:none;stroke:var(--surface-3);stroke-width:14}
+.ring-fg{fill:none;stroke:var(--primary);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(.3,0,.2,1)}
+.ring-wrap.good .ring-fg{stroke:var(--success)}
+.ring-wrap.mid .ring-fg{stroke:var(--warn)}
+.ring-wrap.bad .ring-fg{stroke:var(--error)}
+.ring-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:2px}
+.ring-pct{font-size:36px;font-weight:700}
+.ring-sub{font-size:13px;color:var(--on-surface-var)}
+.result-text{flex:1;min-width:250px}
+.result-text h2{font-size:24px;margin-bottom:10px;line-height:1.3}
+.result-text p{color:var(--on-surface-var);line-height:1.55;font-size:15px}
+.result-text p b{color:var(--on-surface)}
+.result-note{margin-top:12px;font-size:13px;display:flex;gap:7px;align-items:center;color:var(--on-surface-var)}
+.result-note .msi{font-size:17px;color:var(--primary)}
+.result-note.timeout .msi{color:var(--warn)}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 4px}
+.review-title{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:600;margin:28px 0 14px}
+.review-title .msi{color:var(--primary)}
+.review-item{background:var(--card);border:1px solid var(--outline-var);border-left:5px solid var(--outline-var);border-radius:18px;padding:18px;margin-bottom:12px;animation:viewIn .3s}
+.review-item.ok{border-left-color:var(--success)}
+.review-item.bad{border-left-color:var(--error)}
+.ri-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;color:var(--on-surface-var);font-size:14px}
+.review-item.ok .ri-head>.msi{color:var(--success)}
+.review-item.bad .ri-head>.msi{color:var(--error)}
+.ri-badge{margin-left:auto;font-size:12px;font-weight:700;padding:4px 11px;border-radius:8px}
+.ri-badge.ok{background:var(--success-container);color:var(--on-success-container)}
+.ri-badge.bad{background:var(--error-container);color:var(--on-error-container)}
+.ri-q{font-size:16px;font-weight:500;margin-bottom:12px;line-height:1.45}
+.ri-list{display:flex;flex-direction:column;gap:8px}
+.ri-a{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:12px;background:var(--surface-2);color:var(--on-surface-var);font-size:14.5px;border:1px solid transparent;flex-wrap:wrap}
+.ri-a .ic{font-size:18px;flex:none}
+.ri-a em{margin-left:auto;font-style:normal;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;white-space:nowrap;background:color-mix(in srgb,currentColor 14%,transparent)}
+.ri-a.hit{background:var(--success-container);color:var(--on-success-container)}
+.ri-a.hit .ic{color:var(--success)}
+.ri-a.miss{border:1.5px dashed var(--success);color:var(--on-surface)}
+.ri-a.miss .ic{color:var(--success)}
+.ri-a.wrong{background:var(--error-container);color:var(--on-error-container)}
+.ri-a.wrong .ic{color:var(--error)}
+
+/* ============ Dialogs ============ */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:grid;place-items:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.dialog{background:var(--card);border-radius:24px;max-width:520px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 10px 44px rgba(0,0,0,.32);transform:scale(.94) translateY(10px);transition:transform .22s cubic-bezier(.2,0,0,1)}
+.dialog-lg{max-width:700px}
+.scrim.open .dialog{transform:none}
+.dlg-head{display:flex;align-items:center;gap:12px;padding:22px 22px 6px}
+.dlg-head h3{font-size:19px;font-weight:600;flex:1}
+.dlg-head .msi{color:var(--primary);font-size:26px}
+#confirmDialog .dlg-head .msi{color:var(--warn)}
+.dlg-body{padding:12px 22px;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.dlg-note{font-size:14px;color:var(--on-surface-var);line-height:1.55}
+.dlg-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px 20px}
+.code-box{border:1px solid var(--outline-var);border-radius:14px;overflow:hidden;flex:none}
+.code-bar{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--surface-2);font-size:13px;font-weight:500;color:var(--on-surface-var);flex-wrap:wrap}
+.code-bar .msi{font-size:17px}
+.code-box pre{margin:0;padding:14px;font:12.5px/1.6 'Roboto Mono',monospace;overflow:auto;max-height:280px;color:var(--on-surface)}
+.import-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.import-or{font-size:13px;color:var(--on-surface-var)}
+.import-result{border-radius:12px;padding:12px 15px;font-size:13.5px;line-height:1.55}
+.import-result.err{background:var(--error-container);color:var(--on-error-container)}
+.import-result.okk{background:var(--success-container);color:var(--on-success-container)}
+
+/* ============ Snackbar ============ */
+#snackbar{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(24px);background:var(--snack-bg);color:var(--snack-fg);display:flex;align-items:center;gap:11px;padding:13px 20px;border-radius:14px;box-shadow:var(--elev2);opacity:0;pointer-events:none;transition:.28s cubic-bezier(.2,0,0,1);z-index:200;max-width:min(92vw,500px);font-size:14px}
+#snackbar.show{opacity:1;transform:translateX(-50%)}
+#snackbar .msi{font-size:20px;color:var(--primary)}
+html[data-theme="dark"] #snackbar .msi{color:#6750A4}
+
+@media(max-width:600px){
+  .home-hero h1{font-size:25px}
+  .quiz-card{padding:18px}
+  .result-hero{padding:20px}
+  .appbar-title{max-width:32vw}
+  .fab{right:14px;bottom:14px}
+  .editor-actions{bottom:8px}
+  .time-field{width:100%}
+}
+</style>
+</head>
+<body data-view="home">
+
+<header class="appbar">
+  <div class="appbar-inner">
+    <button class="icon-btn ripple" id="navBtn" aria-label="Назад"><span class="msi">arrow_back</span></button>
+    <div class="brand"><span class="msi">quiz</span><b>QuizForge</b></div>
+    <span class="appbar-sep" id="appbarSep">·</span>
+    <span class="appbar-title" id="appbarTitle"></span>
+    <span class="spacer"></span>
+    <div class="appbar-actions" id="appbarActions"></div>
+    <button class="icon-btn ripple" id="themeBtn" title="Сменить тему" aria-label="Сменить тему"><span class="msi">dark_mode</span></button>
+  </div>
+</header>
+
+<main>
+  <!-- ================= HOME ================= -->
+  <section class="view active" id="view-home">
+    <div class="home-hero">
+      <h1>Мои тесты</h1>
+      <p class="hero-sub">Создавайте тесты с текстовыми вопросами и картинками, проходите их с таймером и перемешиванием, экспортируйте тесты и результаты, импортируйте JSON. Тесты сохраняются в браузере (localStorage) и останутся даже после закрытия страницы.</p>
+      <div class="stats-row" id="statsRow"></div>
+    </div>
+    <div class="home-toolbar">
+      <div class="chipset" id="filterChips">
+        <button class="chip-f active" data-filter="all">Все</button>
+        <button class="chip-f" data-filter="created">Созданные</button>
+        <button class="chip-f" data-filter="import">Импортированные</button>
+      </div>
+      <div class="field search-field">
+        <span class="msi s-ic">search</span>
+        <input id="searchInput" placeholder=" " autocomplete="off">
+        <label>Поиск теста</label>
+      </div>
+    </div>
+    <div class="cards-grid" id="testsGrid"></div>
+    <div class="empty" id="emptyState" hidden></div>
+  </section>
+
+  <!-- ================= EDITOR ================= -->
+  <section class="view" id="view-editor">
+    <div class="editor-wrap">
+      <div class="editor-meta">
+        <div class="field"><input id="edTitle" placeholder=" " maxlength="120" autocomplete="off"><label>Название теста *</label></div>
+        <div class="field"><input id="edDesc" placeholder=" " maxlength="300" autocomplete="off"><label>Описание (необязательно)</label></div>
+        <div class="editor-settings">
+          <label class="switch-row">
+            <span class="switch"><input type="checkbox" id="edShuffle"><span class="track"></span></span>
+            Перемешивать вопросы и ответы при каждом прохождении
+          </label>
+          <div class="field time-field"><input id="edTime" type="number" min="0" max="180" step="1" inputmode="numeric" placeholder=" "><label>Лимит времени, мин (0 — без лимита)</label></div>
+        </div>
+      </div>
+      <div id="questionsList"></div>
+      <button class="add-q-btn ripple" id="addQBtn"><span class="msi">add</span>Добавить вопрос</button>
+      <div class="editor-actions">
+        <button class="btn btn-text ripple" id="edCancel">Отмена</button>
+        <button class="btn btn-filled ripple" id="edSave"><span class="msi">check</span>Сохранить тест</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= QUIZ ================= -->
+  <section class="view" id="view-quiz">
+    <div class="quiz-wrap">
+      <div class="quiz-status">
+        <span class="quiz-counter" id="quizCounter"></span>
+        <div class="quiz-status-right">
+          <span class="chip timer" id="timerChip" hidden><span class="msi">timer</span><span id="timerVal">00:00</span></span>
+          <span class="chip" id="quizHint"></span>
+        </div>
+      </div>
+      <div class="lprog"><i id="quizBar"></i></div>
+      <div class="quiz-card" id="quizCard"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-tonal ripple" id="quizBack"><span class="msi">arrow_back</span>Назад</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button class="btn btn-filled ripple" id="quizNext">Далее<span class="msi">arrow_forward</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS ================= -->
+  <section class="view" id="view-results">
+    <div class="results-wrap">
+      <div class="result-hero" id="resultHero"></div>
+      <div class="result-actions" id="resultActions"></div>
+      <h2 class="review-title"><span class="msi">visibility</span>Разбор ответов</h2>
+      <div id="reviewList"></div>
+    </div>
+  </section>
+</main>
+
+<button class="fab ripple" id="fabNew"><span class="msi">add</span>Создать тест</button>
+
+<!-- ================= IMPORT DIALOG ================= -->
+<div class="scrim" id="importDialog">
+  <div class="dialog dialog-lg" role="dialog" aria-modal="true">
+    <div class="dlg-head"><span class="msi">file_upload</span><h3>Импорт тестов</h3><button class="icon-btn ripple" data-close="importDialog" aria-label="Закрыть"><span class="msi">close</span></button></div>
+    <div class="dlg-body">
+      <p class="dlg-note">Тесты загружаются из JSON — из файла или вставленного текста. Можно импортировать сразу несколько тестов одним файлом. Поля «shuffle» (перемешивание) и «timeLimit» (лимит времени в минутах) — необязательны. Шаблон структуры:</p>
+      <div class="code-box">
+        <div class="code-bar"><span class="msi">code</span>Шаблон JSON<span class="spacer"></span>
+          <button class="btn btn-text sm ripple" id="copyTpl"><span class="msi">content_copy</span>Копировать</button>
+          <button class="btn btn-text sm ripple" id="dlTpl"><span class="msi">file_download</span>Скачать шаблон</button>
+        </div>
+        <pre id="tplPre"></pre>
+      </div>
+      <div class="import-row">
+        <button class="btn btn-outlined ripple" id="pickFileBtn"><span class="msi">description</span><span id="fileBtnLabel">Выбрать файл .json</span></button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+        <span class="import-or">или вставьте JSON ниже</span>
+      </div>
+      <div class="field"><textarea id="importText" rows="6" placeholder=" " spellcheck="false"></textarea><label>JSON с тестами</label></div>
+      <div class="import-result" id="importResult" hidden></div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn btn-text ripple" data-close="importDialog">Отмена</button>
+      <button class="btn btn-filled ripple" id="doImportBtn"><span class="msi">file_upload</span>Импортировать</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CONFIRM DIALOG ================= -->
+<div class="scrim" id="confirmDialog">
+  <div class="dialog" role="dialog" aria-modal="true">
+    <div class="dlg-head"><span class="msi">warning</span><h3 id="confirmTitle"></h3></div>
+    <div class="dlg-body"><p class="dlg-note" id="confirmText"></p></div>
+    <div class="dlg-foot">
+      <button class="btn btn-text ripple" data-close="confirmDialog">Отмена</button>
+      <button class="btn btn-filled ripple danger" id="confirmOk">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<div id="snackbar"></div>
+
+<script>
+(function(){
+'use strict';
+/* ================= helpers ================= */
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function uid(){return 't'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function plural(n,f){var m10=n%10,m100=n%100;if(m10===1&&m100!==11)return f[0];if(m10>=2&&m10<=4&&(m100<12||m100>14))return f[1];return f[2];}
+function shuffleArr(a){var r=a.slice();for(var i=r.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=r[i];r[i]=r[j];r[j]=tmp;}return r;}
+var dtf=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short'});
+function fmtDate(ts){try{return dtf.format(new Date(ts));}catch(e){return '';}}
+function fmtTime(ms){var s=Math.ceil(ms/1000),m=Math.floor(s/60);s%=60;return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;}
+function fmtElapsed(ms){var s=Math.round(ms/1000),m=Math.floor(s/60);s%=60;if(m===0)return s+' '+plural(s,['секунду','секунды','секунд']);return m+' мин'+(s?' '+s+' с':'');}
+
+/* ================= data (localStorage + миграция из sessionStorage) ================= */
+var STORE_KEY='quizforge.data.v2', THEME_KEY='quizforge.theme.v1';
+var LEGACY_STORE_KEY='quizforge.session.v2'; /* ключ прошлой версии на sessionStorage */
+var IMG_EMPTY='https://image.qwenlm.ai/public_source/d1c1a425-3427-4459-93b8-624b154b6865/1dcd5370c-c112-4807-8d31-c92e388f4f6a.png';
+var IMG_FOX='https://image.qwenlm.ai/public_source/d1c1a425-3427-4459-93b8-624b154b6865/1b805a42c-0e4c-4d87-b3d1-35577a38bed5.png';
+var IMG_AURORA='https://image.qwenlm.ai/public_source/d1c1a425-3427-4459-93b8-624b154b6865/1da7f7d33-620d-47e1-8293-a8e1f0d26c43.png';
+var IMG_TOWER='https://image.qwenlm.ai/public_source/d1c1a425-3427-4459-93b8-624b154b6865/1272e608e-c950-4669-bbae-10721f9e2e9d.png';
+var state={tests:[]};
+
+function migrateFromSession(){
+  try{
+    var legacyData=sessionStorage.getItem(LEGACY_STORE_KEY);
+    if(legacyData!==null){
+      if(localStorage.getItem(STORE_KEY)===null)localStorage.setItem(STORE_KEY,legacyData);
+      sessionStorage.removeItem(LEGACY_STORE_KEY);
+    }
+    var legacyTheme=sessionStorage.getItem(THEME_KEY);
+    if(legacyTheme!==null){
+      if(localStorage.getItem(THEME_KEY)===null)localStorage.setItem(THEME_KEY,legacyTheme);
+      sessionStorage.removeItem(THEME_KEY);
+    }
+  }catch(e){}
+}
+function loadState(){try{var raw=localStorage.getItem(STORE_KEY);if(raw){var d=JSON.parse(raw);if(d&&Array.isArray(d.tests)){state=d;return true;}}}catch(e){}return false;}
+function saveState(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){snack('Не удалось сохранить данные: хранилище браузера переполнено','warning');}}
+
+function seedTests(){
+  var now=Date.now();
+  return [
+    {id:uid(),title:'Мир в картинках',description:'Вопросы с иллюстрациями: рассмотрите изображение и выберите правильный ответ.',source:'created',shuffle:false,timeLimit:0,createdAt:now-86400000,updatedAt:now-86400000,lastResult:null,questions:[
+      {text:'Кто изображён на картинке?',image:IMG_FOX,answers:[{text:'Волк',correct:false},{text:'Лиса',correct:true},{text:'Енот',correct:false},{text:'Барсук',correct:false}]},
+      {text:'Какое природное явление запечатлено на фотографии?',image:IMG_AURORA,answers:[{text:'Северное сияние',correct:true},{text:'Радуга',correct:false},{text:'Полярный день',correct:false},{text:'Световой столб',correct:false}]},
+      {text:'В каком городе находится эта достопримечательность?',image:IMG_TOWER,answers:[{text:'Лондон',correct:false},{text:'Рим',correct:false},{text:'Париж',correct:true},{text:'Вена',correct:false}]}
+    ]},
+    {id:uid(),title:'Разминка: общие знания',description:'Короткий тест на время: вопросы и ответы перемешиваются при каждом прохождении.',source:'created',shuffle:true,timeLimit:2,createdAt:now,updatedAt:now,lastResult:null,questions:[
+      {text:'Сколько планет в Солнечной системе?',image:'',answers:[{text:'Семь',correct:false},{text:'Восемь',correct:true},{text:'Девять',correct:false},{text:'Десять',correct:false}]},
+      {text:'Выберите столицы государств (несколько правильных ответов):',image:'',answers:[{text:'Париж',correct:true},{text:'Сидней',correct:false},{text:'Токио',correct:true},{text:'Нью-Йорк',correct:false}]},
+      {text:'Кто написал роман «Война и мир»?',image:'',answers:[{text:'Ф. М. Достоевский',correct:false},{text:'Л. Н. Толстой',correct:true},{text:'А. П. Чехов',correct:false},{text:'И. С. Тургенев',correct:false}]},
+      {text:'Какие из перечисленных вариантов — языки программирования?',image:'',answers:[{text:'Python',correct:true},{text:'Photoshop',correct:false},{text:'JavaScript',correct:true},{text:'Excel',correct:false}]},
+      {text:'Какой океан самый большой по площади?',image:'',answers:[{text:'Атлантический',correct:false},{text:'Индийский',correct:false},{text:'Тихий',correct:true},{text:'Северный Ледовитый',correct:false}]}
+    ]}
+  ];
+}
+
+/* ================= snackbar / dialogs ================= */
+var snackTimer=null;
+function snack(msg,icon,dur){
+  var el=$('#snackbar');
+  el.innerHTML='<span class="msi">'+(icon||'info')+'</span><span>'+esc(msg)+'</span>';
+  el.classList.add('show');
+  clearTimeout(snackTimer);
+  snackTimer=setTimeout(function(){el.classList.remove('show');},dur||3200);
+}
+function openScrim(id){$('#'+id).classList.add('open');}
+function closeScrim(id){$('#'+id).classList.remove('open');}
+var confirmCb=null;
+function askConfirm(title,text,okLabel,cb,danger){
+  $('#confirmTitle').textContent=title;
+  $('#confirmText').textContent=text;
+  var ok=$('#confirmOk');ok.textContent=okLabel;
+  ok.classList.toggle('danger',danger!==false);
+  confirmCb=cb;openScrim('confirmDialog');
+}
+
+/* ================= appbar / router ================= */
+function setAppbar(cfg){
+  $('#appbarTitle').textContent=cfg.title||'';
+  $('#appbarSep').style.visibility=cfg.title?'visible':'hidden';
+  var nb=$('#navBtn');
+  nb.style.display=cfg.navAction?'inline-grid':'none';
+  nb.querySelector('.msi').textContent=cfg.navIcon||'arrow_back';
+  nb.onclick=cfg.navAction||null;
+  var box=$('#appbarActions');box.innerHTML='';
+  (cfg.actions||[]).forEach(function(a){
+    var b=document.createElement('button');
+    b.className='icon-btn ripple';b.title=a.label;b.setAttribute('aria-label',a.label);
+    b.innerHTML='<span class="msi">'+a.icon+'</span>';
+    b.addEventListener('click',a.action);
+    box.appendChild(b);
+  });
+}
+function showView(name){
+  document.body.dataset.view=name;
+  $$('.view').forEach(function(v){v.classList.toggle('active',v.id==='view-'+name);});
+  window.scrollTo({top:0});
+}
+function goHome(){stopTimerTick();quiz=null;draft=null;showView('home');renderHome();}
+
+/* ================= home ================= */
+var homeFilter='all',homeSearch='';
+function renderHome(){
+  setAppbar({title:'',actions:[
+    {icon:'file_upload',label:'Импортировать тест из JSON',action:openImportDialog},
+    {icon:'file_download',label:'Экспортировать все тесты',action:exportAll}
+  ]});
+  renderStats();renderGrid();
+}
+function renderStats(){
+  var total=state.tests.length;
+  var qsum=state.tests.reduce(function(s,t){return s+t.questions.length;},0);
+  var done=state.tests.filter(function(t){return t.lastResult;}).length;
+  $('#statsRow').innerHTML=total?
+    '<div class="stat"><span class="msi">quiz</span><b>'+total+'</b>'+plural(total,['тест','теста','тестов'])+'</div>'+
+    '<div class="stat"><span class="msi">format_list_numbered</span><b>'+qsum+'</b>'+plural(qsum,['вопрос','вопроса','вопросов'])+'</div>'+
+    '<div class="stat"><span class="msi">done_all</span><b>'+done+'</b>'+plural(done,['пройден','пройдено','пройдено'])+'</div>':'';
+}
+function isMulti(q){return q.answers.filter(function(a){return a.correct;}).length>1;}
+function testCard(t){
+  var nq=t.questions.length;
+  var imgs=t.questions.some(function(q){return q.image;});
+  var multi=t.questions.some(isMulti);
+  var lr=t.lastResult;
+  var pct=lr?Math.round(lr.score/lr.total*100):null;
+  var date=fmtDate(t.updatedAt||t.createdAt||Date.now());
+  return '<article class="test-card">'+
+    '<div class="tc-top"><div class="tc-avatar'+(t.source==='import'?' imp':'')+'"><span class="msi">'+(t.source==='import'?'file_upload':'edit_note')+'</span></div>'+
+    '<div class="tc-title"><h3>'+esc(t.title)+'</h3>'+(t.description?'<p>'+esc(t.description)+'</p>':'')+'</div></div>'+
+    '<div class="tc-chips">'+
+      '<span class="chip"><span class="msi">format_list_numbered</span>'+nq+' '+plural(nq,['вопрос','вопроса','вопросов'])+'</span>'+
+      (imgs?'<span class="chip"><span class="msi">image</span>картинки</span>':'')+
+      (multi?'<span class="chip"><span class="msi">done_all</span>мультивыбор</span>':'')+
+      (t.shuffle?'<span class="chip"><span class="msi">shuffle</span>перемешивание</span>':'')+
+      (t.timeLimit?'<span class="chip"><span class="msi">timer</span>'+t.timeLimit+' мин</span>':'')+
+      (lr?'<span class="chip score '+(pct>=80?'good':pct>=50?'mid':'bad')+'"><span class="msi">emoji_events</span>'+lr.score+'/'+lr.total+' · '+pct+'%</span>':'')+
+    '</div>'+
+    '<div class="tc-date"><span class="msi">schedule</span>'+(t.source==='import'?'импортирован':'создан')+' · '+date+'</div>'+
+    '<div class="tc-actions">'+
+      '<button class="btn btn-filled ripple" data-act="take" data-id="'+t.id+'"><span class="msi">play_arrow</span>Пройти</button>'+
+      '<button class="btn btn-tonal ripple" data-act="edit" data-id="'+t.id+'"><span class="msi">edit</span>Изменить</button>'+
+      '<button class="icon-btn ripple" data-act="export" data-id="'+t.id+'" title="Экспортировать в JSON" aria-label="Экспортировать"><span class="msi">file_download</span></button>'+
+      '<button class="icon-btn ripple danger" data-act="del" data-id="'+t.id+'" title="Удалить" aria-label="Удалить"><span class="msi">delete</span></button>'+
+    '</div></article>';
+}
+function renderGrid(){
+  var grid=$('#testsGrid'),empty=$('#emptyState');
+  if(!state.tests.length){
+    grid.innerHTML='';empty.hidden=false;
+    empty.innerHTML='<img src="'+IMG_EMPTY+'" alt="">'+
+      '<h3>Тестов пока нет</h3>'+
+      '<p>Создайте свой первый тест или импортируйте готовые из JSON-файла — шаблон структуры подскажет формат.</p>'+
+      '<div class="btn-row"><button class="btn btn-filled ripple" id="emptyCreate"><span class="msi">add</span>Создать тест</button>'+
+      '<button class="btn btn-outlined ripple" id="emptyImport"><span class="msi">file_upload</span>Импортировать</button></div>';
+    $('#emptyCreate').onclick=function(){openEditor(null);};
+    $('#emptyImport').onclick=openImportDialog;
+    return;
+  }
+  var list=state.tests.filter(function(t){
+    if(homeFilter==='created'&&t.source!=='created')return false;
+    if(homeFilter==='import'&&t.source!=='import')return false;
+    if(homeSearch&&t.title.toLowerCase().indexOf(homeSearch)===-1)return false;
+    return true;
+  });
+  if(!list.length){
+    grid.innerHTML='';empty.hidden=false;
+    empty.innerHTML='<span class="msi" style="font-size:44px;color:var(--outline)">search_off</span><h3>Ничего не найдено</h3><p>Попробуйте изменить запрос или фильтр.</p>';
+    return;
+  }
+  empty.hidden=true;
+  grid.innerHTML=list.map(testCard).join('');
+}
+function onGridClick(e){
+  var b=e.target.closest('[data-act]');if(!b)return;
+  var id=b.dataset.id,act=b.dataset.act;
+  if(act==='take')startQuiz(id);
+  else if(act==='edit')openEditor(id);
+  else if(act==='export')exportTest(id);
+  else if(act==='del'){
+    var t=state.tests.find(function(x){return x.id===id;});if(!t)return;
+    askConfirm('Удалить тест?','«'+t.title+'» будет удалён без возможности восстановления.','Удалить',function(){
+      state.tests=state.tests.filter(function(x){return x.id!==id;});
+      saveState();renderHome();snack('Тест удалён','delete');
+    },true);
+  }
+}
+
+/* ================= editor ================= */
+var draft=null,draftSnapshot='';
+function blankAnswer(){return {text:'',correct:false};}
+function blankQuestion(){return {text:'',image:'',answers:[{text:'',correct:true},blankAnswer()]};}
+function openEditor(id){
+  if(id){var t=state.tests.find(function(x){return x.id===id;});if(!t)return;draft=JSON.parse(JSON.stringify(t));}
+  else draft={id:null,title:'',description:'',shuffle:false,timeLimit:0,questions:[blankQuestion()]};
+  draftSnapshot=JSON.stringify(draft);
+  showView('editor');renderEditor();
+}
+function renderEditor(){
+  setAppbar({title:draft.id?'Редактирование теста':'Новый тест',navIcon:'arrow_back',navAction:exitEditor});
+  $('#edTitle').value=draft.title;$('#edDesc').value=draft.description;
+  $('#edShuffle').checked=!!draft.shuffle;
+  $('#edTime').value=draft.timeLimit?draft.timeLimit:'';
+  renderQuestions();
+}
+function exitEditor(){
+  if(!draft||JSON.stringify(draft)===draftSnapshot){goHome();return;}
+  askConfirm('Выйти без сохранения?','Внесённые изменения будут потеряны.','Выйти',goHome,false);
+}
+function qCard(q,i){
+  var imgBlock;
+  if(q.image){
+    imgBlock='<div class="q-img-prev"><div class="q-media sm" style="margin:0;border:none"><img src="'+esc(q.image)+'" alt=""></div>'+
+      '<div class="q-img-btns"><button class="btn btn-tonal sm ripple" data-act="img-pick" data-qi="'+i+'"><span class="msi">add_photo_alternate</span>Заменить</button>'+
+      '<button class="btn btn-text sm ripple danger" data-act="img-del" data-qi="'+i+'"><span class="msi">close</span>Убрать</button></div></div>';
+  }else{
+    imgBlock='<div class="q-img-empty"><button class="btn btn-outlined ripple" data-act="img-pick" data-qi="'+i+'"><span class="msi">add_photo_alternate</span>Прикрепить картинку</button>'+
+      '<div class="field url-field"><input data-qi="'+i+'" data-f="imgurl" value="" placeholder=" " autocomplete="off"><label>…или вставьте URL картинки</label></div></div>';
+  }
+  return '<div class="q-card" data-qi="'+i+'">'+
+    '<div class="q-head"><span class="q-num">'+(i+1)+'</span>'+
+    '<span class="q-kind"><span class="msi">'+(q.image?'image':'help_outline')+'</span>'+(q.image?'вопрос с картинкой':'текстовый вопрос')+'</span>'+
+    '<span class="spacer"></span>'+
+    '<button class="icon-btn ripple" data-act="del-q" data-qi="'+i+'" title="Удалить вопрос" aria-label="Удалить вопрос"><span class="msi">delete</span></button></div>'+
+    '<div class="field"><input data-qi="'+i+'" data-f="text" value="'+esc(q.text)+'" placeholder=" " maxlength="400" autocomplete="off"><label>Текст вопроса'+(q.image?' (необязательно)':' *')+'</label></div>'+
+    imgBlock+
+    '<div class="q-answers">'+q.answers.map(function(a,j){
+      return '<div class="a-row">'+
+        '<button class="correct-toggle ripple'+(a.correct?' on':'')+'" data-act="toggle-correct" data-qi="'+i+'" data-ai="'+j+'" title="Отметить правильным" aria-label="Отметить правильным"><span class="msi">check</span></button>'+
+        '<div class="field a-field"><input data-qi="'+i+'" data-ai="'+j+'" data-f="atext" value="'+esc(a.text)+'" placeholder=" " maxlength="300" autocomplete="off"><label>Ответ '+(j+1)+'</label></div>'+
+        '<button class="icon-btn ripple'+(q.answers.length<=2?' disabled':'')+'" data-act="del-a" data-qi="'+i+'" data-ai="'+j+'" title="Удалить ответ" aria-label="Удалить ответ"><span class="msi">close</span></button>'+
+      '</div>';
+    }).join('')+'</div>'+
+    '<div class="q-foot"><button class="btn btn-text ripple" data-act="add-a" data-qi="'+i+'"><span class="msi">add</span>Добавить ответ</button>'+
+    '<span class="q-hint"><span class="msi">info</span>Кружок слева от ответа отмечает правильный. Правильных ответов может быть несколько — тогда в тесте будет мультивыбор.</span></div>'+
+  '</div>';
+}
+function renderQuestions(){
+  var box=$('#questionsList');
+  if(!draft.questions.length){box.innerHTML='<div class="no-q"><span class="msi">quiz</span>Вопросов пока нет — нажмите «Добавить вопрос».</div>';return;}
+  box.innerHTML=draft.questions.map(qCard).join('');
+}
+function onQListClick(e){
+  var b=e.target.closest('[data-act]');if(!b||!draft)return;
+  var qi=+b.dataset.qi,q=draft.questions[qi],act=b.dataset.act;
+  if(act==='add-a'&&q){q.answers.push(blankAnswer());renderQuestions();
+    var inp=$('input[data-qi="'+qi+'"][data-ai="'+(q.answers.length-1)+'"]');if(inp)inp.focus();}
+  else if(act==='del-a'&&q){
+    if(q.answers.length<=2){snack('У вопроса должно остаться минимум два ответа','warning');return;}
+    q.answers.splice(+b.dataset.ai,1);renderQuestions();}
+  else if(act==='toggle-correct'&&q){var a=q.answers[+b.dataset.ai];if(a){a.correct=!a.correct;renderQuestions();}}
+  else if(act==='del-q'){draft.questions.splice(qi,1);renderQuestions();snack('Вопрос удалён','delete');}
+  else if(act==='img-pick'){pickImage(qi);}
+  else if(act==='img-del'&&q){q.image='';renderQuestions();}
+}
+function onQListInput(e){
+  var el=e.target;if(!draft||!el.dataset||el.dataset.qi===undefined)return;
+  var q=draft.questions[+el.dataset.qi];if(!q)return;
+  if(el.dataset.f==='text')q.text=el.value;
+  else if(el.dataset.f==='atext'&&el.dataset.ai!==undefined){var a=q.answers[+el.dataset.ai];if(a)a.text=el.value;}
+}
+function onQListChange(e){
+  var el=e.target;if(!draft||el.dataset.f!=='imgurl')return;
+  var q=draft.questions[+el.dataset.qi];if(!q)return;
+  var v=el.value.trim();
+  if(v){q.image=v;renderQuestions();snack('Картинка добавлена по ссылке','image');}
+}
+function pickImage(qi){
+  var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.onchange=function(){
+    var f=inp.files&&inp.files[0];if(!f)return;
+    if(f.size>1.5*1024*1024){snack('Файл больше 1,5 МБ — возьмите картинку поменьше или вставьте URL','warning');return;}
+    var r=new FileReader();
+    r.onload=function(){if(draft&&draft.questions[qi]){draft.questions[qi].image=String(r.result);renderQuestions();snack('Картинка добавлена','image');}};
+    r.readAsDataURL(f);
+  };
+  inp.click();
+}
+function cleanQuestions(){
+  return draft.questions.map(function(q){
+    return {text:q.text.trim(),image:(q.image||'').trim(),
+      answers:q.answers.filter(function(a){return a.text.trim();}).map(function(a){return {text:a.text.trim(),correct:!!a.correct};})};
+  });
+}
+function parseTimeLimit(){
+  var v=parseInt(draft.timeLimit,10);
+  if(isNaN(v)||v<0)v=0;
+  if(v>180)v=180;
+  return v;
+}
+function saveDraft(){
+  var errs=[];
+  if(!draft.title.trim())errs.push('Укажите название теста');
+  if(!draft.questions.length)errs.push('Добавьте хотя бы один вопрос');
+  draft.questions.forEach(function(q,i){
+    var ans=q.answers.filter(function(a){return a.text.trim();});
+    if(!q.text.trim()&&!(q.image||'').trim())errs.push('Вопрос '+(i+1)+': добавьте текст вопроса или картинку');
+    if(ans.length<2)errs.push('Вопрос '+(i+1)+': нужно минимум два заполненных ответа');
+    else if(!ans.some(function(a){return a.correct;}))errs.push('Вопрос '+(i+1)+': отметьте хотя бы один правильный ответ');
+  });
+  if(errs.length){snack(errs[0],'warning',4200);return;}
+  var qs=cleanQuestions();
+  var shuffle=!!draft.shuffle,timeLimit=parseTimeLimit();
+  if(draft.id){
+    var idx=state.tests.findIndex(function(t){return t.id===draft.id;});
+    if(idx>-1){var cur=state.tests[idx];
+      state.tests[idx]={id:cur.id,title:draft.title.trim(),description:draft.description.trim(),questions:qs,shuffle:shuffle,timeLimit:timeLimit,source:cur.source,createdAt:cur.createdAt,updatedAt:Date.now(),lastResult:cur.lastResult};}
+  }else{
+    state.tests.unshift({id:uid(),title:draft.title.trim(),description:draft.description.trim(),questions:qs,shuffle:shuffle,timeLimit:timeLimit,source:'created',createdAt:Date.now(),updatedAt:Date.now(),lastResult:null});
+  }
+  saveState();goHome();snack('Тест сохранён','check_circle');
+}
+
+/* ================= quiz ================= */
+var quiz=null,tickTimer=null;
+function quizTest(){return quiz?quiz.test:null;}
+function buildEffectiveTest(t){
+  var qs=t.shuffle?shuffleArr(t.questions):t.questions;
+  return {
+    id:t.id,title:t.title,shuffle:!!t.shuffle,
+    questions:qs.map(function(q){return {text:q.text,image:q.image,answers:(t.shuffle?shuffleArr(q.answers):q.answers.slice())};})
+  };
+}
+function startQuiz(id){
+  var t=state.tests.find(function(x){return x.id===id;});if(!t||!t.questions.length)return;
+  stopTimerTick();
+  var eff=buildEffectiveTest(t);
+  var lim=Math.max(0,Math.min(180,parseInt(t.timeLimit,10)||0));
+  quiz={id:id,idx:0,answers:eff.questions.map(function(){return [];}),result:null,test:eff,started:Date.now(),timedOut:false,deadline:lim>0?Date.now()+lim*60000:null};
+  showView('quiz');renderQuiz();
+  tickTimer=setInterval(timerTick,500);
+  timerTick();
+}
+function stopTimerTick(){if(tickTimer){clearInterval(tickTimer);tickTimer=null;}}
+function timerTick(){
+  var chip=$('#timerChip');
+  if(!quiz||!quiz.deadline){chip.hidden=true;return;}
+  chip.hidden=false;
+  var left=quiz.deadline-Date.now();
+  if(left<=0){
+    $('#timerVal').textContent='00:00';chip.classList.remove('low');
+    if(!quiz.timedOut){quiz.timedOut=true;finishQuiz();snack('Время вышло — тест завершён автоматически','timer',4000);}
+    return;
+  }
+  $('#timerVal').textContent=fmtTime(left);
+  chip.classList.toggle('low',left<60000);
+}
+function renderQuiz(){
+  var t=quizTest();if(!t||!quiz){goHome();return;}
+  var n=t.questions.length,i=quiz.idx,q=t.questions[i];
+  setAppbar({title:t.title,navIcon:'close',navAction:function(){askConfirm('Прервать тест?','Прогресс прохождения не сохранится.','Прервать',goHome,false);}});
+  $('#quizCounter').textContent='Вопрос '+(i+1)+' из '+n;
+  $('#quizHint').innerHTML=isMulti(q)?'<span class="msi">done_all</span>можно выбрать несколько':'<span class="msi">radio_button_checked</span>один ответ';
+  $('#quizBar').style.width=(((i+1)/n)*100).toFixed(1)+'%';
+  var media=q.image?'<div class="q-media"><img src="'+esc(q.image)+'" alt=""></div>':'';
+  var title=q.text?esc(q.text):'Рассмотрите картинку и выберите правильный ответ.';
+  $('#quizCard').innerHTML=media+'<h2 class="q-title">'+title+'</h2><div class="opts'+(isMulti(q)?' multi':'')+'">'+
+    q.answers.map(function(a,ai){
+      return '<button type="button" class="opt ripple'+(quiz.answers[i].indexOf(ai)>-1?' sel':'')+'" data-ai="'+ai+'">'+
+        '<span class="ind"><span class="msi">check</span></span><span class="opt-text">'+esc(a.text)+'</span></button>';
+    }).join('')+'</div>';
+  $('#quizDots').innerHTML=t.questions.map(function(_,k){
+    var c='dot';if(k===i)c+=' cur';else if(quiz.answers[k].length)c+=' done';
+    return '<i class="'+c+'"></i>';
+  }).join('');
+  $('#quizBack').disabled=(i===0);
+  var nx=$('#quizNext');
+  nx.disabled=quiz.answers[i].length===0;
+  nx.innerHTML=(i===n-1)?'Завершить<span class="msi">check</span>':'Далее<span class="msi">arrow_forward</span>';
+  timerTick();
+}
+function toggleAnswer(ai){
+  var t=quizTest();if(!t||!quiz)return;
+  var q=t.questions[quiz.idx],sel=quiz.answers[quiz.idx];
+  if(isMulti(q)){var k=sel.indexOf(ai);if(k>-1)sel.splice(k,1);else sel.push(ai);}
+  else{sel.length=0;sel.push(ai);}
+  renderQuiz();
+}
+function finishQuiz(){
+  if(!quiz||quiz.result)return;
+  stopTimerTick();
+  var t=quiz.test,score=0;
+  t.questions.forEach(function(q,i){
+    var corr=q.answers.map(function(a,j){return a.correct?j:-1;}).filter(function(j){return j>-1;}).sort(function(a,b){return a-b;}).join(',');
+    var sel=quiz.answers[i].slice().sort(function(a,b){return a-b;}).join(',');
+    if(corr!==''&&corr===sel)score++;
+  });
+  var res={score:score,total:t.questions.length,date:Date.now(),timedOut:quiz.timedOut,elapsed:Date.now()-quiz.started};
+  quiz.result=res;
+  var orig=state.tests.find(function(x){return x.id===quiz.id;});
+  if(orig){orig.lastResult={score:score,total:t.questions.length,date:res.date};saveState();}
+  showView('results');renderResults();
+}
+
+/* ================= results ================= */
+function animateNum(el,to){
+  var dur=1000,st=performance.now();
+  function f(now){var p=Math.min(1,(now-st)/dur),e=1-Math.pow(1-p,3);el.textContent=Math.round(to*e);if(p<1)requestAnimationFrame(f);}
+  requestAnimationFrame(f);
+}
+function qLabel(q){return q.text&&q.text.trim()?q.text:'(вопрос по картинке)';}
+function buildResultDetail(){
+  var t=quiz.test,rows=[];
+  t.questions.forEach(function(q,i){
+    var sel=quiz.answers[i];
+    var chosen=sel.map(function(j){return q.answers[j]?q.answers[j].text:'';}).filter(Boolean);
+    var correct=q.answers.filter(function(a){return a.correct;}).map(function(a){return a.text;});
+    var corrIdx=q.answers.map(function(a,j){return a.correct?j:-1;}).filter(function(j){return j>-1;}).sort(function(a,b){return a-b;}).join(',');
+    var ok=corrIdx!==''&&corrIdx===sel.slice().sort(function(a,b){return a-b;}).join(',');
+    rows.push({n:i+1,question:qLabel(q),chosen:chosen.join(', '),correct:correct.join(', '),ok:ok});
+  });
+  return rows;
+}
+function exportResultJSON(){
+  if(!quiz||!quiz.result)return;
+  var r=quiz.result;
+  var payload={app:'QuizForge',type:'result',version:1,testTitle:quiz.test.title,score:r.score,total:r.total,percent:Math.round(r.score/r.total*100),timedOut:!!r.timedOut,elapsedMs:r.elapsed,completedAt:new Date(r.date).toISOString(),
+    answers:buildResultDetail().map(function(x){return {questionNumber:x.n,question:x.question,userAnswer:x.chosen||'(нет ответа)',correctAnswer:x.correct,correct:x.ok};})};
+  downloadJSON(payload,slug(quiz.test.title)+'-rezultat.json');
+  snack('Результат экспортирован в JSON','file_download');
+}
+function csvEscape(s){return '"'+String(s).replace(/"/g,'""')+'"';}
+function exportResultCSV(){
+  if(!quiz||!quiz.result)return;
+  var rows=buildResultDetail();
+  var lines=['№;Вопрос;Ваш ответ;Правильный ответ;Верно'];
+  rows.forEach(function(x){lines.push([x.n,csvEscape(x.question),csvEscape(x.chosen||'(нет ответа)'),csvEscape(x.correct),x.ok?'да':'нет'].join(';'));});
+  var blob=new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=slug(quiz.test.title)+'-rezultat.csv';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},800);
+  snack('Результат экспортирован в CSV','table_chart');
+}
+function reviewItem(q,i,sel){
+  var corr=q.answers.map(function(a,j){return a.correct?j:-1;}).filter(function(j){return j>-1;}).sort(function(a,b){return a-b;}).join(',');
+  var ok=corr!==''&&corr===sel.slice().sort(function(a,b){return a-b;}).join(',');
+  return '<div class="review-item '+(ok?'ok':'bad')+'">'+
+    '<div class="ri-head"><span class="msi">'+(ok?'check_circle':'cancel')+'</span><b>Вопрос '+(i+1)+'</b>'+
+    '<span class="ri-badge '+(ok?'ok':'bad')+'">'+(ok?'Верно':'Неверно')+'</span></div>'+
+    (q.image?'<div class="q-media sm"><img src="'+esc(q.image)+'" alt=""></div>':'')+
+    (q.text?'<div class="ri-q">'+esc(q.text)+'</div>':'')+
+    '<div class="ri-list">'+q.answers.map(function(a,j){
+      var isSel=sel.indexOf(j)>-1,cls='',tag='';
+      if(a.correct&&isSel){cls='hit';tag='ваш правильный ответ';}
+      else if(a.correct){cls='miss';tag='правильный ответ';}
+      else if(isSel){cls='wrong';tag='ваш неверный ответ';}
+      return '<div class="ri-a '+cls+'"><span class="msi ic">'+(a.correct?'check':(isSel?'close':'remove'))+'</span><span>'+esc(a.text)+'</span>'+(tag?'<em>'+tag+'</em>':'')+'</div>';
+    }).join('')+'</div></div>';
+}
+function renderResults(){
+  var t=quizTest();if(!t||!quiz||!quiz.result){goHome();return;}
+  setAppbar({title:'Результаты теста',navIcon:'arrow_back',navAction:goHome});
+  var score=quiz.result.score,total=quiz.result.total,p=Math.round(score/total*100);
+  var verdict=p===100?'Идеально! Все ответы верные.':p>=80?'Отличный результат!':p>=60?'Хороший результат!':p>=40?'Неплохо, но есть куда расти.':'Стоит повторить материал и попробовать ещё раз.';
+  var tone=p>=80?'good':p>=50?'mid':'bad';
+  $('#resultHero').innerHTML=
+    '<div class="ring-wrap '+tone+'">'+
+      '<svg width="180" height="180" viewBox="0 0 180 180">'+
+        '<circle class="ring-bg" cx="90" cy="90" r="78"></circle>'+
+        '<circle class="ring-fg" id="ringFg" cx="90" cy="90" r="78" transform="rotate(-90 90 90)"></circle>'+
+      '</svg>'+
+      '<div class="ring-center"><div class="ring-pct"><span id="ringNum">0</span>%</div><div class="ring-sub">'+score+' из '+total+'</div></div>'+
+    '</div>'+
+    '<div class="result-text"><h2>'+verdict+'</h2>'+
+    '<p>Правильных ответов: <b>'+score+'</b> из <b>'+total+'</b> — тест «'+esc(t.title)+'». Время прохождения: <b>'+fmtElapsed(quiz.result.elapsed)+'</b>.</p>'+
+    '<p class="result-note"><span class="msi">verified</span>Результат сохранён ('+fmtDate(quiz.result.date)+'). Тест можно пройти повторно в любой момент.</p>'+
+    (quiz.result.timedOut?'<p class="result-note timeout"><span class="msi">timer</span>Время истекло — тест завершён автоматически.</p>':'')+
+    '</div>';
+  $('#resultActions').innerHTML=
+    '<button class="btn btn-filled ripple" id="retakeBtn"><span class="msi">refresh</span>Пройти ещё раз</button>'+
+    '<button class="btn btn-tonal ripple" id="toHomeBtn"><span class="msi">format_list_bulleted</span>К списку тестов</button>'+
+    '<button class="btn btn-outlined ripple" id="expJsonBtn"><span class="msi">description</span>Результат JSON</button>'+
+    '<button class="btn btn-outlined ripple" id="expCsvBtn"><span class="msi">table_chart</span>Результат CSV</button>';
+  $('#retakeBtn').onclick=function(){startQuiz(quiz.id);};
+  $('#toHomeBtn').onclick=goHome;
+  $('#expJsonBtn').onclick=exportResultJSON;
+  $('#expCsvBtn').onclick=exportResultCSV;
+  $('#reviewList').innerHTML=t.questions.map(function(q,i){return reviewItem(q,i,quiz.answers[i]);}).join('');
+  var C=2*Math.PI*78,fg=$('#ringFg');
+  fg.style.strokeDasharray=C;fg.style.strokeDashoffset=C;
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    fg.style.strokeDashoffset=C*(1-score/total);
+    animateNum($('#ringNum'),p);
+  });});
+}
+
+/* ================= import / export ================= */
+var IMPORT_TEMPLATE='{\n  "app": "QuizForge",\n  "version": 1,\n  "tests": [\n    {\n      "title": "Название теста",\n      "description": "Краткое описание (необязательно)",\n      "shuffle": false,\n      "timeLimit": 0,\n      "questions": [\n        {\n          "text": "Текст вопроса. Можно оставить пустым, если задана картинка",\n          "image": "https://example.com/picture.png — необязательное поле",\n          "answers": [\n            { "text": "Первый ответ", "correct": true },\n            { "text": "Второй ответ", "correct": false },\n            { "text": "Третий ответ", "correct": false }\n          ]\n        }\n      ]\n    }\n  ]\n}';
+function openImportDialog(){resetImportDialog();$('#tplPre').textContent=IMPORT_TEMPLATE;openScrim('importDialog');}
+function resetImportDialog(){
+  $('#importText').value='';$('#importFile').value='';
+  $('#fileBtnLabel').textContent='Выбрать файл .json';
+  var r=$('#importResult');r.hidden=true;r.innerHTML='';
+}
+function showImportResult(html,kind){var r=$('#importResult');r.hidden=false;r.className='import-result '+kind;r.innerHTML=html;}
+function copyTemplate(){
+  var done=function(){snack('Шаблон скопирован в буфер обмена','content_copy');};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(IMPORT_TEMPLATE).then(done).catch(fallback);}
+  else fallback();
+  function fallback(){var ta=document.createElement('textarea');ta.value=IMPORT_TEMPLATE;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){snack('Не удалось скопировать — выделите текст вручную','warning');}ta.remove();}
+}
+function downloadJSON(obj,name){
+  var blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},800);
+}
+function slug(s){return (s||'').toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'-').replace(/^-+|-+$/g,'').slice(0,48)||'test';}
+function publicTest(t){return {title:t.title,description:t.description,shuffle:!!t.shuffle,timeLimit:t.timeLimit||0,questions:t.questions};}
+function exportTest(id){
+  var t=state.tests.find(function(x){return x.id===id;});if(!t)return;
+  downloadJSON({app:'QuizForge',version:1,exportedAt:new Date().toISOString(),tests:[publicTest(t)]},slug(t.title)+'.json');
+  snack('Тест экспортирован в JSON','file_download');
+}
+function exportAll(){
+  if(!state.tests.length){snack('Список тестов пуст — нечего экспортировать','warning');return;}
+  downloadJSON({app:'QuizForge',version:1,exportedAt:new Date().toISOString(),tests:state.tests.map(publicTest)},'quizforge-all-tests.json');
+  snack('Экспортировано тестов: '+state.tests.length,'file_download');
+}
+function normalizeTest(raw,i){
+  if(!raw||typeof raw!=='object')throw new Error('не является объектом');
+  var title=String(raw.title||raw.name||'').trim()||('Импортированный тест '+(i+1));
+  var description=String(raw.description||'');
+  var shuffle=(raw.shuffle===true||raw.shuffle===1||raw.shuffle==='true');
+  var timeLimit=Math.max(0,Math.min(180,parseInt(raw.timeLimit!=null?raw.timeLimit:(raw.timeLimitMin||0),10)||0));
+  var qs=raw.questions;
+  if(!Array.isArray(qs)||!qs.length)throw new Error('нет списка "questions"');
+  var questions=qs.map(function(q,j){
+    if(!q||typeof q!=='object')throw new Error('вопрос '+(j+1)+': некорректный формат');
+    var text=String(q.text!=null?q.text:(q.question!=null?q.question:''));
+    var image=String(q.image!=null?q.image:(q.picture!=null?q.picture:''));
+    var ans=q.answers||q.options||q.variants;
+    if(!Array.isArray(ans))throw new Error('вопрос '+(j+1)+': нет списка "answers"');
+    var answers=ans.map(function(a,k){
+      if(typeof a==='string'||typeof a==='number')return {text:String(a),correct:false};
+      if(!a||typeof a!=='object')throw new Error('вопрос '+(j+1)+', ответ '+(k+1)+': некорректный формат');
+      return {text:String(a.text!=null?a.text:(a.answer!=null?a.answer:'')),correct:(a.correct===true||a.isCorrect===true||a.correct===1||a.correct==='true')};
+    });
+    if(answers.length<2)throw new Error('вопрос '+(j+1)+': нужно минимум два ответа');
+    if(!answers.some(function(a){return a.correct;}))throw new Error('вопрос '+(j+1)+': не отмечен правильный ответ');
+    if(!text.trim()&&!image.trim())throw new Error('вопрос '+(j+1)+': нужен текст или картинка');
+    return {text:text.trim(),image:image.trim(),answers:answers};
+  });
+  return {id:uid(),title:title,description:description.trim(),questions:questions,shuffle:shuffle,timeLimit:timeLimit,source:'import',createdAt:Date.now(),updatedAt:Date.now(),lastResult:null};
+}
+function parseImport(text){
+  var data;
+  try{data=JSON.parse(text);}catch(e){return {errors:['JSON не распознан: '+e.message],tests:[]};}
+  var arr=[];
+  if(Array.isArray(data))arr=data;
+  else if(data&&typeof data==='object'){
+    if(Array.isArray(data.tests))arr=data.tests;
+    else if(Array.isArray(data.questions))arr=[data];
+    else return {errors:['Не найдено ни одного теста. Ожидается объект с полем "tests" или один тест с полем "questions".'],tests:[]};
+  }else return {errors:['Ожидается JSON-объект или массив.'],tests:[]};
+  if(!arr.length)return {errors:['Список тестов пуст.'],tests:[]};
+  var tests=[],errors=[];
+  arr.forEach(function(raw,i){try{tests.push(normalizeTest(raw,i));}catch(e){errors.push('Тест '+(i+1)+': '+e.message);}});
+  return {tests:tests,errors:errors};
+}
+function runImport(){
+  var f=$('#importFile').files[0];
+  if(f){var r=new FileReader();r.onload=function(){doImportText(String(r.result));};r.readAsText(f);}
+  else doImportText($('#importText').value);
+}
+function doImportText(text){
+  if(!text||!text.trim()){showImportResult('Вставьте JSON в поле ниже или выберите файл.','err');return;}
+  var res=parseImport(text);
+  if(!res.tests.length){showImportResult(res.errors.map(esc).join('<br>'),'err');return;}
+  state.tests.unshift.apply(state.tests,res.tests);saveState();
+  var lines=['<b>Импортировано тестов: '+res.tests.length+'</b> — '+res.tests.map(function(t){return esc(t.title);}).join(', ')+'.'];
+  if(res.errors.length)lines.push('Пропущены с ошибками: '+res.errors.map(esc).join('; '));
+  showImportResult(lines.join('<br>'),'okk');
+  setTimeout(function(){closeScrim('importDialog');goHome();snack('Импортировано тестов: '+res.tests.length,'file_upload');},res.errors.length?2600:1100);
+}
+
+/* ================= theme ================= */
+var themeManual=false;
+function systemTheme(){return (window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}
+function applyTheme(th,persist){
+  document.documentElement.dataset.theme=th;
+  $('#themeBtn .msi').textContent=(th==='dark')?'light_mode':'dark_mode';
+  if(persist){try{localStorage.setItem(THEME_KEY,th);}catch(e){}}
+}
+function toggleTheme(){
+  themeManual=true;
+  var cur=document.documentElement.dataset.theme;
+  applyTheme(cur==='dark'?'light':'dark',true);
+}
+function initTheme(){
+  var saved=null;try{saved=localStorage.getItem(THEME_KEY);}catch(e){}
+  applyTheme(saved||systemTheme(),false);
+  if(saved)themeManual=true;
+  if(window.matchMedia){
+    var mq=matchMedia('(prefers-color-scheme: dark)');
+    var onChange=function(e){if(!themeManual)applyTheme(e.matches?'dark':'light',false);};
+    if(mq.addEventListener)mq.addEventListener('change',onChange);
+    else if(mq.addListener)mq.addListener(onChange);
+  }
+}
+
+/* ================= global bindings ================= */
+function bindGlobal(){
+  document.addEventListener('pointerdown',function(e){
+    var el=e.target.closest('.ripple');if(!el)return;
+    var rect=el.getBoundingClientRect(),d=Math.max(rect.width,rect.height)*2;
+    var s=document.createElement('span');s.className='ripple-ink';
+    s.style.width=s.style.height=d+'px';
+    s.style.left=(e.clientX-rect.left-d/2)+'px';
+    s.style.top=(e.clientY-rect.top-d/2)+'px';
+    el.appendChild(s);setTimeout(function(){s.remove();},600);
+  });
+  document.addEventListener('error',function(e){
+    var img=e.target;
+    if(img&&img.tagName==='IMG'&&img.closest('.q-media')){
+      img.parentElement.innerHTML='<div class="img-broken"><span class="msi">image</span>Картинка недоступна</div>';
+    }
+  },true);
+  $('#themeBtn').addEventListener('click',toggleTheme);
+  $('#fabNew').addEventListener('click',function(){openEditor(null);});
+  $('#testsGrid').addEventListener('click',onGridClick);
+  $('#filterChips').addEventListener('click',function(e){
+    var c=e.target.closest('.chip-f');if(!c)return;
+    homeFilter=c.dataset.filter;
+    $$('#filterChips .chip-f').forEach(function(x){x.classList.toggle('active',x===c);});
+    renderGrid();
+  });
+  $('#searchInput').addEventListener('input',function(e){homeSearch=e.target.value.trim().toLowerCase();renderGrid();});
+  $('#edTitle').addEventListener('input',function(e){if(draft)draft.title=e.target.value;});
+  $('#edDesc').addEventListener('input',function(e){if(draft)draft.description=e.target.value;});
+  $('#edShuffle').addEventListener('change',function(e){if(draft)draft.shuffle=e.target.checked;});
+  $('#edTime').addEventListener('input',function(e){if(draft)draft.timeLimit=e.target.value;});
+  $('#addQBtn').addEventListener('click',function(){
+    if(!draft)return;
+    draft.questions.push(blankQuestion());renderQuestions();
+    var qi=draft.questions.length-1;
+    var inp=$('input[data-qi="'+qi+'"][data-f="text"]');
+    if(inp){inp.scrollIntoView({behavior:'smooth',block:'center'});inp.focus({preventScroll:true});}
+  });
+  $('#edCancel').addEventListener('click',exitEditor);
+  $('#edSave').addEventListener('click',saveDraft);
+  var ql=$('#questionsList');
+  ql.addEventListener('click',onQListClick);
+  ql.addEventListener('input',onQListInput);
+  ql.addEventListener('change',onQListChange);
+  $('#quizCard').addEventListener('click',function(e){
+    var o=e.target.closest('.opt');if(o)toggleAnswer(+o.dataset.ai);
+  });
+  $('#quizBack').addEventListener('click',function(){if(quiz&&quiz.idx>0){quiz.idx--;renderQuiz();}});
+  $('#quizNext').addEventListener('click',function(){
+    if(!quiz)return;
+    var t=quizTest();if(!t)return;
+    if(quiz.idx===t.questions.length-1)finishQuiz();
+    else{quiz.idx++;renderQuiz();}
+  });
+  document.addEventListener('click',function(e){
+    var c=e.target.closest('[data-close]');if(c)closeScrim(c.dataset.close);
+  });
+  $$('.scrim').forEach(function(s){s.addEventListener('click',function(e){if(e.target===s)closeScrim(s.id);});});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape')$$('.scrim.open').forEach(function(s){closeScrim(s.id);});
+  });
+  $('#copyTpl').addEventListener('click',copyTemplate);
+  $('#dlTpl').addEventListener('click',function(){downloadJSON(JSON.parse(IMPORT_TEMPLATE),'quizforge-template.json');snack('Шаблон скачан','file_download');});
+  $('#pickFileBtn').addEventListener('click',function(){$('#importFile').click();});
+  $('#importFile').addEventListener('change',function(e){
+    var f=e.target.files[0];
+    $('#fileBtnLabel').textContent=f?f.name:'Выбрать файл .json';
+  });
+  $('#doImportBtn').addEventListener('click',runImport);
+  $('#confirmOk').addEventListener('click',function(){closeScrim('confirmDialog');var cb=confirmCb;confirmCb=null;if(cb)cb();});
+}
+
+/* ================= init ================= */
+function init(){
+  migrateFromSession();
+  initTheme();
+  if(!loadState()){state.tests=seedTests();saveState();}
+  bindGlobal();
+  goHome();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+else init();
+})();
+</script>
+</body>
+</html>
+
