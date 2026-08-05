@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Планета хорошего</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%90%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/material-symbols-outlined/index.css">
+<style>
+:root{--size:min(72vmin,560px)}
+*{box-sizing:border-box}html,body{margin:0}
+body{
+  min-height:100vh;color:#EDEBFF;font-family:Roboto,system-ui,sans-serif;overflow:hidden;background:#0b0f22;
+  -webkit-tap-highlight-color:transparent;
+}
+body::before{content:'';position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(1100px 700px at 75% -10%, #2a1b4d 0%, transparent 60%),
+    radial-gradient(900px 650px at -10% 110%, #0e3149 0%, transparent 55%);}
+.msi{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:22px;line-height:1;display:inline-block;vertical-align:middle;font-feature-settings:'liga';user-select:none}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+#stars i{position:absolute;border-radius:50%;background:#fff;opacity:.7;animation:twinkle linear infinite}
+@keyframes twinkle{50%{opacity:.12}}
+header{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:10px;padding:14px 20px;
+  background:linear-gradient(180deg, rgba(11,15,34,.85), rgba(11,15,34,0));}
+.brand{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700;letter-spacing:.3px}
+.brand .msi{font-size:26px;color:#B388EB}
+.chip{margin-left:6px;font-size:12.5px;font-weight:500;color:#cfd0ff;background:rgba(179,136,235,.16);border:1px solid rgba(179,136,235,.4);padding:5px 12px;border-radius:9px}
+.spacer{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:20px;
+  font:500 14px Roboto,sans-serif;padding:10px 18px;transition:transform .12s, filter .15s, background .2s;user-select:none;touch-action:manipulation}
+.btn:active{transform:scale(.96)}
+.btn.primary{background:#B388EB;color:#241243;box-shadow:0 4px 18px rgba(179,136,235,.35)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:rgba(255,255,255,.08);color:#EDEBFF}
+.btn.ghost:hover{background:rgba(255,255,255,.14)}
+.btn.icon{width:42px;height:42px;padding:0;border-radius:50%}
+.btn.sm{height:34px;padding:0 14px;font-size:13px;border-radius:17px}
+.zoomer{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.08);border-radius:18px;padding:3px 8px}
+#zoomLbl{min-width:44px;text-align:center;font-size:12.5px;color:#cfd0ff}
+.zbtn{border:none;background:transparent;color:#EDEBFF;font-size:16px;line-height:1;width:26px;height:26px;border-radius:50%;cursor:pointer;touch-action:manipulation}
+.zbtn:hover{background:rgba(255,255,255,.12)}
+.zbtn:disabled{opacity:.35;cursor:default}
+main{position:fixed;inset:0;z-index:1}
+.scene{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.planet{position:relative;width:var(--size);height:var(--size);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.planet:active{cursor:grabbing}
+.core{position:absolute;inset:12%;border-radius:50%;z-index:500;opacity:.7;
+  background:radial-gradient(circle at 32% 28%, #4d5fb8 0%, #2b3577 45%, #141b41 78%);
+  box-shadow:0 0 70px rgba(99,120,255,.35), 0 0 18px rgba(179,136,235,.25), inset -22px -30px 70px rgba(0,0,0,.6);}
+.core::after{content:'';position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 70% 78%, rgba(179,136,235,.18), transparent 55%);}
+.dot{position:absolute;left:50%;top:50%;border-radius:50%;cursor:pointer;will-change:transform,opacity}
+.dot:hover{filter:brightness(1.2)}
+.tooltip{position:absolute;z-index:3000;width:264px;max-width:calc(100vw - 20px);background:rgba(23,27,52,.95);border:1px solid rgba(179,136,235,.45);
+  border-radius:14px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.5);backdrop-filter:blur(6px)}
+.tooltip .t-row{display:flex;align-items:flex-start;gap:10px}
+.tooltip .t-dot{width:12px;height:12px;border-radius:50%;flex:none;margin-top:4px}
+.tooltip .t-text{font-size:14px;line-height:1.45;flex:1;min-width:0;overflow-wrap:break-word}
+.tooltip .t-del{border:none;background:transparent;color:#8f93c0;cursor:pointer;padding:2px;border-radius:8px;flex:none;touch-action:manipulation}
+.tooltip .t-del:hover{color:#ff8fa3;background:rgba(255,255,255,.06)}
+.hint{position:absolute;left:50%;top:min(calc(50% + var(--size)/2 + 16px), calc(100% - 64px));transform:translateX(-50%);
+  max-width:560px;width:max-content;text-align:center;color:#a9add6;font-size:13.5px;line-height:1.5;padding:0 16px}
+.fab{position:fixed;z-index:50;border:none;cursor:pointer;background:#B388EB;color:#241243;touch-action:manipulation;
+  box-shadow:0 8px 26px rgba(179,136,235,.45);
+  width:92px;height:92px;border-radius:30px;
+  left:50%;top:50%;transform:translate(-50%,-50%);
+  transition:left .45s cubic-bezier(.2,0,0,1),top .45s cubic-bezier(.2,0,0,1),transform .45s cubic-bezier(.2,0,0,1),
+    width .3s,height .3s,border-radius .3s,filter .15s}
+.fab:hover{filter:brightness(1.07)}
+.fab .msi{font-size:42px}
+.fab.corner{left:calc(100% - 92px);top:calc(100% - 92px);transform:none;width:62px;height:62px;border-radius:20px}
+.fab.corner .msi{font-size:30px}
+.overlay{position:fixed;inset:0;z-index:90;background:rgba(5,8,20,.55);opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.open{opacity:1;pointer-events:auto}
+.drawer{position:absolute;left:0;top:0;bottom:0;width:min(380px,92vw);background:#141834;border-right:1px solid rgba(179,136,235,.35);
+  display:flex;flex-direction:column;transform:translateX(-102%);transition:transform .3s cubic-bezier(.2,0,0,1);box-shadow:20px 0 60px rgba(0,0,0,.5)}
+.overlay.open .drawer{transform:none}
+.d-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.d-head h3{margin:0;font-size:17px}
+.d-head .msi{color:#B388EB}
+.d-list{flex:1;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.d-empty{text-align:center;color:#8f93c0;font-size:13.5px;padding:30px 10px;line-height:1.5}
+.f-item{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px}
+.f-dot{width:12px;height:12px;border-radius:50%;flex:none;margin-top:4px;box-shadow:0 0 8px currentColor}
+.f-body{flex:1;min-width:0}
+.f-text{font-size:14px;line-height:1.45;overflow-wrap:break-word}
+.f-date{font-size:11.5px;color:#8f93c0;margin-top:3px}
+.f-del{border:none;background:transparent;color:#8f93c0;cursor:pointer;border-radius:8px;padding:2px;touch-action:manipulation}
+.f-del:hover{color:#ff8fa3}
+.d-foot{display:flex;gap:10px;padding:14px 16px;border-top:1px solid rgba(255,255,255,.08)}
+.d-foot .btn{flex:1}
+.scrim{position:fixed;inset:0;z-index:100;background:rgba(5,8,20,.6);backdrop-filter:blur(3px);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.dlg{width:min(460px, calc(100vw - 32px));background:#171b34;border:1px solid rgba(179,136,235,.4);border-radius:22px;padding:22px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);transform:scale(.95) translateY(8px);transition:transform .2s;max-height:88vh;overflow:auto}
+.scrim.open .dlg{transform:none}
+.dlg h3{margin:0 0 14px;font-size:18px}
+.dlg textarea{width:100%;resize:none;background:#0e1228;border:1px solid rgba(179,136,235,.35);border-radius:14px;color:#EDEBFF;
+  font:400 15px/1.45 Roboto,sans-serif;padding:12px 14px;min-height:86px;outline:none}
+.dlg textarea:focus{border-color:#B388EB}
+.swatches{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 18px}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .12s;touch-action:manipulation}
+.sw:hover{transform:scale(1.12)}
+.sw.sel{border-color:#fff;transform:scale(1.15)}
+.dlg .row{display:flex;justify-content:flex-end;gap:10px}
+.dlg .note{font-size:13.5px;color:#a9add6;line-height:1.5;margin:0 0 10px}
+.code-box{border:1px solid rgba(179,136,235,.35);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.code-bar{display:flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(255,255,255,.05);font-size:13px;font-weight:500;color:#a9add6}
+.code-bar .msi{font-size:17px}
+.code-box pre{margin:0;padding:12px 14px;font:12px/1.6 'Roboto Mono',Consolas,monospace;overflow:auto;max-height:220px;color:#EDEBFF}
+.import-result{border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.5;margin-top:10px}
+.import-result.err{background:rgba(239,71,111,.15);color:#ffb3c4}
+.import-result.okk{background:rgba(6,214,160,.15);color:#9ff0d6}
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);z-index:200;background:#262b4d;color:#EDEBFF;
+  padding:12px 20px;border-radius:12px;border:1px solid rgba(179,136,235,.4);opacity:0;pointer-events:none;transition:.25s;font-size:14px}
+#toast.show{opacity:1;transform:translateX(-50%)}
+/* ---------- мобильная адаптация ---------- */
+@media(max-width:640px){
+  header{padding:10px 12px;gap:6px}
+  .brand{font-size:16px;gap:6px}
+  .brand .msi{font-size:22px}
+  #countChip{display:none}
+  .zoomer{padding:2px 6px}
+  #zoomLbl{min-width:36px;font-size:11.5px}
+  .btn.icon{width:38px;height:38px}
+  .hint{font-size:12.5px;width:calc(100% - 24px)}
+  .fab{width:76px;height:76px;border-radius:24px}
+  .fab .msi{font-size:34px}
+  .fab.corner{left:auto;right:16px;top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:18px}
+  .fab.corner .msi{font-size:26px}
+  .tooltip{width:220px}
+}
+@media(max-width:420px){
+  .brand-txt{display:none}
+}
+@media(max-height:560px){body{overflow:auto}}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+
+<header>
+  <button class="btn ghost icon" id="menuBtn" title="Все факты, экспорт и импорт"><span class="msi">menu</span></button>
+  <div class="brand"><span class="msi">planet</span><span class="brand-txt">Планета хорошего</span></div>
+  <span class="chip" id="countChip">0 фактов</span>
+  <span class="spacer"></span>
+  <div class="zoomer" title="Масштаб интерфейса">
+    <button class="zbtn" id="zoomOut" title="Уменьшить">−</button>
+    <span id="zoomLbl">100%</span>
+    <button class="zbtn" id="zoomIn" title="Увеличить">+</button>
+  </div>
+  <button class="btn ghost icon" id="pauseBtn" title="Остановить / запустить вращение"><span class="msi" id="pauseIco">pause</span></button>
+</header>
+
+<main>
+  <div class="scene" id="scene">
+    <div class="planet" id="planet">
+      <div class="core"></div>
+    </div>
+    <div class="tooltip" id="tip" hidden>
+      <div class="t-row">
+        <span class="t-dot" id="tipDot"></span>
+        <span class="t-text" id="tipText"></span>
+        <button class="t-del" id="tipDel" title="Удалить факт"><span class="msi" style="font-size:18px">delete</span></button>
+      </div>
+    </div>
+  </div>
+  <p class="hint" id="hint"></p>
+</main>
+
+<button class="fab" id="addBtn" title="Добавить хороший факт"><span class="msi">add</span></button>
+
+<!-- Шторка -->
+<div class="overlay" id="drawerOverlay">
+  <aside class="drawer">
+    <div class="d-head">
+      <span class="msi">planet</span><h3>Мои факты</h3>
+      <span class="chip" id="dCount" style="margin-left:0">0</span>
+      <span class="spacer"></span>
+      <button class="btn ghost icon" id="drawerClose" title="Закрыть"><span class="msi">close</span></button>
+    </div>
+    <div class="d-list" id="factList"></div>
+    <div class="d-foot">
+      <button class="btn ghost" id="exportFacts"><span class="msi">file_download</span>Экспорт</button>
+      <button class="btn ghost" id="importFacts"><span class="msi">file_upload</span>Импорт</button>
+    </div>
+  </aside>
+</div>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+
+<!-- Импорт с шаблоном -->
+<div class="scrim" id="importDialog">
+  <div class="dlg">
+    <h3>Импорт фактов</h3>
+    <p class="note">Факты загружаются из JSON — из файла или вставленного текста. Поле «color» необязательно (без него цвет выберется случайно), «created» — время в миллисекундах (необязательно). Шаблон структуры:</p>
+    <div class="code-box">
+      <div class="code-bar"><span class="msi">code</span>Шаблон JSON<span class="spacer"></span>
+        <button class="btn ghost sm" id="copyTpl"><span class="msi">content_copy</span>Копировать</button>
+        <button class="btn ghost sm" id="dlTpl"><span class="msi">file_download</span>Скачать</button>
+      </div>
+      <pre id="tplPre"></pre>
+    </div>
+    <div class="row" style="justify-content:flex-start;margin-bottom:10px">
+      <button class="btn ghost sm" id="pickJsonBtn"><span class="msi">description</span><span id="jsonFileLbl">Выбрать файл .json</span></button>
+      <span class="note" style="margin:0">или вставьте JSON ниже</span>
+    </div>
+    <textarea id="importText" spellcheck="false" placeholder='{ "facts": [ ... ] }'></textarea>
+    <div class="import-result" id="importResult" hidden></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn ghost" id="cancelImport">Отмена</button>
+      <button class="btn primary" id="doImport"><span class="msi">file_upload</span>Импортировать</button>
+    </div>
+  </div>
+</div>
+
+<!-- Добавление факта -->
+<div class="scrim" id="addDialog">
+  <div class="dlg">
+    <h3>Новый хороший факт о тебе</h3>
+    <textarea id="factText" maxlength="140" placeholder="Например: я пеку отличные сырники, и друзья это подтвердят"></textarea>
+    <div class="swatches" id="swatches"></div>
+    <div class="row">
+      <button class="btn ghost" id="cancelAdd">Отмена</button>
+      <button class="btn primary" id="saveFact"><span class="msi">add</span>Добавить на планету</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s);};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function uid(){return 'f'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function plural(n,f){var m10=n%10,m100=n%100;if(m10===1&&m100!==11)return f[0];if(m10>=2&&m10<=4&&(m100<12||m100>14))return f[1];return f[2];}
+var dtf=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+
+/* ---------- звёзды ---------- */
+(function(){
+  var box=$('#stars');
+  for(var i=0;i<140;i++){
+    var s=document.createElement('i');
+    var sz=(Math.random()*2+1).toFixed(1);
+    s.style.left=(Math.random()*100)+'%';
+    s.style.top=(Math.random()*100)+'%';
+    s.style.width=sz+'px';s.style.height=sz+'px';
+    s.style.animationDuration=(2+Math.random()*4).toFixed(1)+'s';
+    s.style.animationDelay=(Math.random()*4).toFixed(1)+'s';
+    box.appendChild(s);
+  }
+})();
+
+/* ---------- данные ---------- */
+var KEY='goodplanet.v1';
+var COLORS=['#FFD166','#EF476F','#06D6A0','#4CC9F0','#B388EB','#FF9770','#7AE582','#F980C0'];
+var state={facts:[],counter:0};
+(function(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){var d=JSON.parse(raw);if(d&&Array.isArray(d.facts)){state=d;}}
+  }catch(e){}
+})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+/* ---------- случайные воспроизводимые точки ---------- */
+function hash01(i,salt){
+  var x=Math.sin(i*127.1+salt*311.7+13.7)*43758.5453;
+  return x-Math.floor(x);
+}
+function pointFor(i){
+  var y=1-2*hash01(i,1);
+  var th=2*Math.PI*hash01(i,2);
+  var r=Math.sqrt(Math.max(0,1-y*y));
+  return {x:Math.cos(th)*r,y:y,z:Math.sin(th)*r};
+}
+
+/* ---------- вращение ---------- */
+var planet=$('#planet'), scene=$('#scene'), tip=$('#tip');
+var angle=0, tilt=-0.42, speed=0.0042, paused=false, dragging=false, hoverId=null;
+var lastX=0,lastY=0;
+var dotEls={};
+
+function render(){
+  if(!paused&&!dragging&&!hoverId) angle+=speed;
+  var size=planet.clientWidth;
+  var R=size*0.385;
+  var cosA=Math.cos(angle),sinA=Math.sin(angle);
+  var cosT=Math.cos(tilt),sinT=Math.sin(tilt);
+  state.facts.forEach(function(f){
+    var el=dotEls[f.id];if(!el)return;
+    var p=f.p;
+    var x1=p.x*cosA+p.z*sinA;
+    var z1=-p.x*sinA+p.z*cosA;
+    var y2=p.y*cosT-z1*sinT;
+    var z2=p.y*sinT+z1*cosT;
+    var d=(z2+1)/2;
+    var scale=0.7+0.55*d;
+    el.style.transform='translate(-50%,-50%) translate('+(x1*R).toFixed(1)+'px,'+(y2*R).toFixed(1)+'px) scale('+scale.toFixed(3)+')';
+    el.style.opacity=(0.25+0.75*d).toFixed(2);
+    el.style.zIndex=Math.round(500+z2*500);
+  });
+  requestAnimationFrame(render);
+}
+
+/* ---------- кружочки и тултип ---------- */
+function makeDot(f){
+  var el=document.createElement('div');
+  el.className='dot';
+  el.style.width='16px';el.style.height='16px';
+  el.style.background=f.color;
+  el.style.boxShadow='0 0 12px '+f.color;
+  el.addEventListener('mouseenter',function(){cancelHide();hoverId=f.id;showTip(f,el);});
+  el.addEventListener('mouseleave',function(){scheduleHide();});
+  el.addEventListener('click',function(e){e.stopPropagation();cancelHide();hoverId=f.id;showTip(f,el);});
+  planet.appendChild(el);
+  dotEls[f.id]=el;
+}
+function showTip(f,el){
+  $('#tipText').textContent=f.text.length>80?f.text.slice(0,77)+'…':f.text;
+  $('#tipDot').style.background=f.color;
+  tip.hidden=false;
+  var sr=scene.getBoundingClientRect(), dr=el.getBoundingClientRect();
+  var x=dr.left+dr.width/2-sr.left;
+  var y=dr.top-sr.top;
+  var half=Math.min(132,(sr.width-20)/2);
+  x=Math.max(half+6,Math.min(sr.width-half-6,x));
+  tip.style.left=x+'px';
+  tip.style.top=Math.max(8,y-10)+'px';
+  tip.style.transform=(y<150)?'translate(-50%,16px)':'translate(-50%,-100%)';
+  tip.dataset.id=f.id;
+}
+function hideTip(){tip.hidden=true;tip.dataset.id='';}
+var hideT=null;
+function scheduleHide(){clearTimeout(hideT);hideT=setTimeout(function(){hoverId=null;hideTip();},350);}
+function cancelHide(){clearTimeout(hideT);}
+tip.addEventListener('mouseenter',cancelHide);
+tip.addEventListener('mouseleave',scheduleHide);
+$('#tipDel').addEventListener('click',function(){
+  var id=tip.dataset.id;if(!id)return;
+  removeFact(id);toast('Факт удалён с планеты');
+});
+function removeFact(id){
+  state.facts=state.facts.filter(function(f){return f.id!==id;});
+  if(dotEls[id]){dotEls[id].remove();delete dotEls[id];}
+  save();hideTip();hoverId=null;updateMeta();renderDrawer();
+}
+
+/* ---------- перетаскивание 1:1 (мышь и палец) ---------- */
+planet.addEventListener('pointerdown',function(e){
+  if(e.target.closest('.dot'))return;
+  dragging=true;lastX=e.clientX;lastY=e.clientY;
+  try{planet.setPointerCapture(e.pointerId);}catch(err){}
+  hideTip();
+});
+planet.addEventListener('pointermove',function(e){
+  if(!dragging)return;
+  var R=planet.getBoundingClientRect().width*0.385;
+  angle+=(e.clientX-lastX)/R;
+  tilt-=(e.clientY-lastY)/R;
+  lastX=e.clientX;lastY=e.clientY;
+});
+['pointerup','pointercancel','pointerleave'].forEach(function(ev){
+  planet.addEventListener(ev,function(){dragging=false;});
+});
+/* тап мимо кружочка/тултипа закрывает подсказку (удобно на сенсорных) */
+document.addEventListener('pointerdown',function(e){
+  if(!e.target.closest('.dot')&&!e.target.closest('.tooltip')){hideTip();hoverId=null;}
+});
+
+/* ---------- пауза ---------- */
+$('#pauseBtn').addEventListener('click',function(){
+  paused=!paused;
+  $('#pauseIco').textContent=paused?'play_arrow':'pause';
+  toast(paused?'Вращение остановлено':'Вращение запущено');
+});
+
+/* ---------- масштаб ---------- */
+var ZOOMS=[0.8,0.9,1,1.1,1.25,1.5];
+var zi=(function(){
+  var z=Number(state.zoom)||1,best=2,bd=9;
+  ZOOMS.forEach(function(v,i){var d=Math.abs(v-z);if(d<bd){bd=d;best=i;}});
+  return best;
+})();
+function applyZoom(persist){
+  var s=ZOOMS[zi];
+  try{document.documentElement.style.zoom=s;}catch(e){}
+  $('#zoomLbl').textContent=Math.round(s*100)+'%';
+  $('#zoomIn').disabled=zi>=ZOOMS.length-1;
+  $('#zoomOut').disabled=zi<=0;
+  if(persist){state.zoom=s;save();}
+}
+$('#zoomIn').addEventListener('click',function(){if(zi<ZOOMS.length-1){zi++;applyZoom(true);}});
+$('#zoomOut').addEventListener('click',function(){if(zi>0){zi--;applyZoom(true);}});
+
+/* ---------- добавление факта ---------- */
+var selColor=COLORS[0];
+(function(){
+  var box=$('#swatches');
+  COLORS.forEach(function(c,i){
+    var b=document.createElement('button');
+    b.className='sw'+(i===0?' sel':'');
+    b.style.background=c;
+    b.addEventListener('click',function(){
+      selColor=c;
+      box.querySelectorAll('.sw').forEach(function(x){x.classList.remove('sel');});
+      b.classList.add('sel');
+    });
+    box.appendChild(b);
+  });
+})();
+$('#addBtn').addEventListener('click',function(){
+  $('#factText').value='';
+  selColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+  var sws=$('#swatches').children;
+  for(var i=0;i<sws.length;i++)sws[i].classList.toggle('sel',COLORS[i]===selColor);
+  $('#addDialog').classList.add('open');
+  setTimeout(function(){$('#factText').focus();},200);
+});
+$('#cancelAdd').addEventListener('click',function(){$('#addDialog').classList.remove('open');});
+$('#addDialog').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+$('#saveFact').addEventListener('click',function(){
+  var text=$('#factText').value.trim();
+  if(!text){toast('Сначала напиши факт — потом на планету!');return;}
+  var f={id:uid(),text:text,color:selColor,created:Date.now(),i:state.counter++};
+  f.p=pointFor(f.i);
+  state.facts.push(f);
+  save();makeDot(f);updateMeta();
+  $('#addDialog').classList.remove('open');
+  toast('Новый кружочек на планете!');
+});
+
+/* ---------- шторка ---------- */
+function renderDrawer(){
+  var n=state.facts.length;
+  $('#dCount').textContent=n+' '+plural(n,['факт','факта','фактов']);
+  var box=$('#factList');
+  if(!n){box.innerHTML='<p class="d-empty">Пока пусто.<br>Добавь первый хороший факт кнопкой «+» — он появится здесь и на планете.</p>';return;}
+  box.innerHTML=state.facts.slice().reverse().map(function(f){
+    return '<div class="f-item">'+
+      '<span class="f-dot" style="background:'+f.color+';color:'+f.color+'"></span>'+
+      '<div class="f-body"><div class="f-text">'+esc(f.text)+'</div>'+
+      '<div class="f-date">'+(f.created?dtf.format(f.created):'без даты')+'</div></div>'+
+      '<button class="f-del" data-del="'+f.id+'" title="Удалить"><span class="msi" style="font-size:18px">delete</span></button>'+
+    '</div>';
+  }).join('');
+}
+$('#factList').addEventListener('click',function(e){
+  var b=e.target.closest('[data-del]');if(!b)return;
+  removeFact(b.dataset.del);toast('Факт удалён');
+});
+$('#menuBtn').addEventListener('click',function(){renderDrawer();$('#drawerOverlay').classList.add('open');});
+$('#drawerClose').addEventListener('click',function(){$('#drawerOverlay').classList.remove('open');});
+$('#drawerOverlay').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+
+/* ---------- экспорт ---------- */
+$('#exportFacts').addEventListener('click',function(){
+  if(!state.facts.length){toast('Пока нечего экспортировать');return;}
+  var payload={app:'GoodPlanet',version:1,exportedAt:new Date().toISOString(),
+    facts:state.facts.map(function(f){return {text:f.text,color:f.color,created:f.created||null};})};
+  var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='good-planet-facts.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},800);
+  toast('Факты экспортированы в JSON');
+});
+
+/* ---------- импорт с шаблоном ---------- */
+var IMPORT_TEMPLATE='{\n  "app": "GoodPlanet",\n  "version": 1,\n  "facts": [\n    {\n      "text": "Я умею печь отличные сырники",\n      "color": "#FFD166",\n      "created": 1754476320000\n    },\n    {\n      "text": "Я пробежал свой первый полумарафон",\n      "color": "#06D6A0"\n    }\n  ]\n}';
+function openImportDialog(){
+  $('#importText').value='';$('#importFile').value='';
+  $('#jsonFileLbl').textContent='Выбрать файл .json';
+  var r=$('#importResult');r.hidden=true;r.className='import-result';
+  $('#tplPre').textContent=IMPORT_TEMPLATE;
+  $('#importDialog').classList.add('open');
+}
+$('#importFacts').addEventListener('click',openImportDialog);
+$('#cancelImport').addEventListener('click',function(){$('#importDialog').classList.remove('open');});
+$('#copyTpl').addEventListener('click',function(){
+  var done=function(){toast('Шаблон скопирован');};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(IMPORT_TEMPLATE).then(done).catch(fb);}
+  else fb();
+  function fb(){var ta=document.createElement('textarea');ta.value=IMPORT_TEMPLATE;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}ta.remove();}
+});
+$('#dlTpl').addEventListener('click',function(){
+  var blob=new Blob([IMPORT_TEMPLATE],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='good-planet-template.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},800);
+  toast('Шаблон сохранён');
+});
+$('#pickJsonBtn').addEventListener('click',function(){$('#importFile').click();});
+$('#importFile').addEventListener('change',function(e){
+  var f=e.target.files[0];
+  $('#jsonFileLbl').textContent=f?f.name:'Выбрать файл .json';
+});
+function isColor(s){return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s);}
+function doImportText(text){
+  var box=$('#importResult');
+  if(!text||!text.trim()){box.hidden=false;box.className='import-result err';box.textContent='Вставьте JSON в поле или выберите файл.';return;}
+  var d;try{d=JSON.parse(text);}catch(e){box.hidden=false;box.className='import-result err';box.textContent='JSON не распознан: '+e.message;return;}
+  var arr=Array.isArray(d)?d:(Array.isArray(d.facts)?d.facts:null);
+  if(!arr||!arr.length){box.hidden=false;box.className='import-result err';box.textContent='Не найдено ни одного факта. Ожидается объект с полем "facts" или массив (см. шаблон).';return;}
+  var n=0;
+  arr.forEach(function(raw){
+    if(!raw||typeof raw.text!=='string'||!raw.text.trim())return;
+    var f={id:uid(),text:raw.text.trim().slice(0,140),
+      color:isColor(raw.color)?raw.color:COLORS[Math.floor(Math.random()*COLORS.length)],
+      created:Number(raw.created)||Date.now(),i:state.counter++};
+    f.p=pointFor(f.i);
+    state.facts.push(f);makeDot(f);n++;
+  });
+  if(!n){box.hidden=false;box.className='import-result err';box.textContent='Не найдено корректных фактов: у каждого должно быть поле "text".';return;}
+  save();updateMeta();renderDrawer();
+  box.hidden=false;box.className='import-result okk';box.textContent='Импортировано фактов: '+n+'.';
+  setTimeout(function(){$('#importDialog').classList.remove('open');toast('Импортировано фактов: '+n);},900);
+}
+$('#doImport').addEventListener('click',function(){
+  var f=$('#importFile').files[0];
+  if(f){var r=new FileReader();r.onload=function(){doImportText(String(r.result));};r.readAsText(f);}
+  else doImportText($('#importText').value);
+});
+
+/* ---------- мета ---------- */
+function updateMeta(){
+  var n=state.facts.length;
+  $('#countChip').textContent=n+' '+plural(n,['факт','факта','фактов']);
+  $('#addBtn').classList.toggle('corner',n>0);
+  $('#hint').innerHTML=n
+    ?'Планета крутится сама, а если схватить её — поверхность следует за курсором. Меню слева сверху: список фактов с датами, экспорт и импорт.'
+    :'Пока пусто. Нажми большую кнопку в центре и добавь первый хороший факт о себе — он станет цветным кружочком на твоей планете.';
+}
+
+/* ---------- тост ---------- */
+var toastT=null;
+function toast(msg){
+  var t=$('#toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2600);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    $('#drawerOverlay').classList.remove('open');
+    $('#importDialog').classList.remove('open');
+    $('#addDialog').classList.remove('open');
+  }
+});
+
+/* ---------- старт ---------- */
+state.facts.forEach(function(f){
+  if(f.i==null){f.i=state.counter++;}
+  f.p=pointFor(f.i);
+  makeDot(f);
+});
+applyZoom(false);
+updateMeta();
+requestAnimationFrame(render);
+})();
+</script>
+</body>
+</html>
