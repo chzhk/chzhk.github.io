@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Квадрат дел — планировщик</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%97%82%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/material-symbols-outlined/index.css">
+<style>
+:root{
+  --primary:#6750A4;--on-primary:#FFF;--primary-container:#EADDFF;--on-primary-container:#21005D;
+  --secondary-container:#E8DEF8;--on-secondary-container:#1D192B;
+  --surface:#FAF7FD;--surface-2:#F3EDF7;--surface-3:#EAE3EF;--card:#FFF;
+  --on-surface:#1D1B20;--on-surface-var:#49454F;--outline-var:#CBC4D0;
+  --error:#B3261E;--on-error:#FFFFFF;--error-container:#F9DEDC;--on-error-container:#410E0B;
+  --success:#2E6B34;--success-container:#C8F0C6;--on-success-container:#0B3A12;
+  --warn:#7A5900;--warn-container:#FFE08B;--on-warn-container:#4A3800;
+  --orange-c:#FFDCC4;--on-orange-c:#5C2E00;
+  --q1:#F7DCD8;--q2:#DCE7FB;--q3:#FFE9B0;--q4:#ECEAF0;
+  --h1-bg:#E4E9E4;--h1-fg:#3D4A3D;--h2-bg:#DCE7FB;--h2-fg:#1E3A6B;--h3-bg:#FFE08B;--h3-fg:#4A3800;--h4-bg:#F9DEDC;--h4-fg:#410E0B;
+  --i1-bg:#E4E9E4;--i1-fg:#3D4A3D;--i2-bg:#DCE7FB;--i2-fg:#1E3A6B;--i3-bg:#EADDFF;--i3-fg:#21005D;--i4-bg:#4F378B;--i4-fg:#EADDFF;
+  --snack-bg:#322F35;--snack-fg:#F5EFF7;--field-label:#FFF;
+  --elev1:0 1px 2px rgba(20,10,40,.16),0 1px 3px 1px rgba(20,10,40,.08);
+  --elev2:0 1px 2px rgba(20,10,40,.16),0 4px 10px 2px rgba(20,10,40,.10);
+  color-scheme:light;
+}
+html[data-theme="dark"]{
+  --primary:#D0BCFF;--on-primary:#381E72;--primary-container:#4F378B;--on-primary-container:#EADDFF;
+  --secondary-container:#4A4458;--on-secondary-container:#E8DEF8;
+  --surface:#131018;--surface-2:#1D1A22;--surface-3:#28242E;--card:#1D1A22;
+  --on-surface:#E6E0E9;--on-surface-var:#CAC4D0;--outline-var:#4A4550;
+  --error:#F2B8B5;--on-error:#601410;--error-container:#8C1D18;--on-error-container:#F9DEDC;
+  --success:#8CD99A;--success-container:#123B16;--on-success-container:#C8F0C6;
+  --warn:#E8C46B;--warn-container:#4A3800;--on-warn-container:#FFE08B;
+  --orange-c:#4A2500;--on-orange-c:#FFDCC4;
+  --q1:#3B1512;--q2:#16233C;--q3:#332600;--q4:#26232B;
+  --h1-bg:#26232B;--h1-fg:#CAC4D0;--h2-bg:#16233C;--h2-fg:#BBD3FF;--h3-bg:#332600;--h3-fg:#FFE08B;--h4-bg:#3B1512;--h4-fg:#F2B8B5;
+  --i1-bg:#26232B;--i1-fg:#CAC4D0;--i2-bg:#16233C;--i2-fg:#BBD3FF;--i3-bg:#4F378B;--i3-fg:#EADDFF;--i4-bg:#EADDFF;--i4-fg:#21005D;
+  --snack-bg:#E6E0E9;--snack-fg:#1D1B20;--field-label:#1D1A22;
+  --elev1:0 1px 2px rgba(0,0,0,.5),0 1px 3px 1px rgba(0,0,0,.28);
+  --elev2:0 1px 2px rgba(0,0,0,.5),0 4px 10px 2px rgba(0,0,0,.32);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:Roboto,system-ui,sans-serif;background:var(--surface);color:var(--on-surface);transition:background .25s,color .25s;min-height:100vh}
+[hidden]{display:none!important}h1,h2,h3,p{margin:0}button{font-family:inherit}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.msi{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:22px;line-height:1;display:inline-block;vertical-align:middle;font-feature-settings:'liga';user-select:none}
+.spacer{flex:1}
+.appbar{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--surface) 80%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--outline-var)}
+.appbar-inner{max-width:1120px;margin:auto;display:flex;align-items:center;gap:4px;padding:8px 16px}
+.brand{display:flex;align-items:center;gap:10px;user-select:none}
+.brand .msi{font-size:27px;color:var(--primary)}
+.brand b{font-size:19px}
+.brand small{font-size:12.5px;color:var(--on-surface-var)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;height:44px;padding:0 22px;border-radius:22px;font:500 14.5px/1 Roboto,sans-serif;cursor:pointer;transition:box-shadow .18s,transform .12s,filter .18s;user-select:none}
+.btn .msi{font-size:20px}.btn:active{transform:scale(.97)}.btn:disabled{opacity:.4;pointer-events:none}
+.btn-filled{background:var(--primary);color:var(--on-primary);box-shadow:var(--elev1)}
+.btn-filled:hover{box-shadow:var(--elev2);filter:brightness(1.06)}
+.btn-tonal{background:var(--secondary-container);color:var(--on-secondary-container)}
+.btn-tonal:hover{filter:brightness(1.05)}
+.btn-text{background:transparent;color:var(--primary);padding:0 14px}
+.btn-text:hover{background:color-mix(in srgb,var(--primary) 10%,transparent)}
+.btn-text.danger{color:var(--error)}
+.btn.sm{height:36px;padding:0 16px;border-radius:18px;font-size:13px}.btn.sm .msi{font-size:18px}
+.icon-btn{width:42px;height:42px;border-radius:50%;display:inline-grid;place-items:center;border:none;background:transparent;color:var(--on-surface-var);cursor:pointer;transition:background .15s;flex:none}
+.icon-btn:hover{background:color-mix(in srgb,var(--on-surface) 9%,transparent)}
+.icon-btn.sel{background:var(--primary-container);color:var(--on-primary-container)}
+.ripple{position:relative;overflow:hidden}
+.ripple-ink{position:absolute;border-radius:50%;background:currentColor;opacity:.16;transform:scale(0);animation:ripple .55s ease-out forwards;pointer-events:none}
+@keyframes ripple{to{transform:scale(1);opacity:0}}
+.chip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 11px;border-radius:9px;background:var(--surface-3);color:var(--on-surface-var);font-size:12px;font-weight:500;user-select:none;white-space:nowrap}
+.chip .msi{font-size:14px}
+.chip.warn{background:var(--warn-container);color:var(--on-warn-container)}
+.chip.err{background:var(--error-container);color:var(--on-error-container)}
+.chip.ok{background:var(--success-container);color:var(--on-success-container)}
+.chip.part{background:var(--orange-c);color:var(--on-orange-c)}
+.chip.u1{background:var(--h1-bg);color:var(--h1-fg)}.chip.u2{background:var(--h2-bg);color:var(--h2-fg)}
+.chip.u3{background:var(--h3-bg);color:var(--h3-fg)}.chip.u4{background:var(--h4-bg);color:var(--h4-fg)}
+.chip.i1{background:var(--i1-bg);color:var(--i1-fg)}.chip.i2{background:var(--i2-bg);color:var(--i2-fg)}
+.chip.i3{background:var(--i3-bg);color:var(--i3-fg)}.chip.i4{background:var(--i4-bg);color:var(--i4-fg)}
+.seg-b.i3.sel{background:var(--i3-bg);color:var(--i3-fg);border-color:transparent}
+.seg-b.i4.sel{background:var(--i4-bg);color:var(--i4-fg);border-color:transparent}
+.seg-b.u3.sel{background:var(--h3-bg);color:var(--h3-fg);border-color:transparent}
+.seg-b.u4.sel{background:var(--h4-bg);color:var(--h4-fg);border-color:transparent}
+.chip-f{cursor:pointer;border:none;height:34px;padding:0 16px;border-radius:10px;background:var(--surface-3);color:var(--on-surface-var);font:500 13px Roboto,sans-serif;transition:.15s;white-space:nowrap}
+.chip-f:hover{filter:brightness(.97)}
+.chip-f.active{background:var(--primary);color:var(--on-primary)}
+.chip-f .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+main{max-width:1120px;margin:0 auto;padding:20px 16px 60px}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.scope-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.ax-cap{font-size:12px;color:var(--on-surface-var);margin:0 0 6px 2px}
+.ax-cap.right{text-align:right;margin:6px 2px 0}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cell{border-radius:14px;padding:8px;min-height:96px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;border:1px solid color-mix(in srgb,var(--on-surface) 6%,transparent)}
+.cell.q1{background:var(--q1)}.cell.q2{background:var(--q2)}.cell.q3{background:var(--q3)}.cell.q4{background:var(--q4)}
+.t-chip{max-width:100%;border:none;cursor:pointer;border-radius:10px;padding:7px 10px;font:500 12.5px Roboto,sans-serif;
+  background:var(--card);color:var(--on-surface);box-shadow:var(--elev1);text-align:left;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:transform .12s}
+.t-chip:hover{transform:translateY(-1px)}
+.t-chip.over{box-shadow:inset 0 0 0 2px var(--error)}
+.t-chip.done{opacity:.55;text-decoration:line-through}
+.l-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--outline-var);border-radius:16px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--elev1)}
+.l-row.over{border-color:var(--error)}
+.l-row.done{opacity:.6}
+.l-main{flex:1;min-width:0}
+.l-text{font-size:15px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.l-row.done .l-text{text-decoration:line-through}
+.l-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.seg{display:inline-flex;gap:3px}
+.seg i{width:14px;height:8px;border-radius:4px;background:var(--surface-3)}
+.seg i.on{background:var(--primary)}
+.done-b{width:34px;height:34px;flex:none;border-radius:50%;border:2px solid var(--outline-var);background:transparent;color:transparent;cursor:pointer;display:grid;place-items:center;transition:.15s}
+.done-b .msi{font-size:18px}
+.done-b.on{background:var(--success);border-color:var(--success);color:#fff}
+.step{display:flex;align-items:center;gap:6px;flex:none}
+.step-b{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--outline-var);background:transparent;color:var(--on-surface-var);cursor:pointer;font-size:15px;line-height:1}
+.step-b:hover{background:var(--surface-3)}
+.grp{margin-bottom:20px}
+.grp-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.grp-head b{font-size:15px}
+.grp-head .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.block-banner{background:var(--card);border:1px solid var(--outline-var);border-radius:18px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--elev1)}
+.bb-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.bb-head h2{font-size:18px}
+.pbar{height:8px;border-radius:4px;background:var(--surface-3);overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--primary);border-radius:4px;transition:width .3s}
+.field{position:relative;min-width:0}
+.field input{width:100%;background:transparent;color:var(--on-surface);border:1px solid var(--outline-var);border-radius:12px;padding:14px;font:400 15px Roboto,sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}
+.field input:focus{border-color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary)}
+.field label{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--on-surface-var);padding:0 6px;background:var(--field-label);pointer-events:none;border-radius:6px;transition:all .15s;white-space:nowrap;max-width:calc(100% - 28px);overflow:hidden;text-overflow:ellipsis}
+.field input:focus~label,.field input:not(:placeholder-shown)~label{top:0;font-size:12px;color:var(--primary)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:grid;place-items:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.dialog{background:var(--card);border-radius:24px;max-width:560px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 44px rgba(0,0,0,.32);transform:scale(.94) translateY(10px);transition:transform .22s cubic-bezier(.2,0,0,1)}
+.scrim.open .dialog{transform:none}
+.dlg-head{display:flex;align-items:center;gap:12px;padding:20px 22px 6px}
+.dlg-head h3{font-size:19px;font-weight:600;flex:1}
+.dlg-body{padding:12px 22px;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.dlg-foot{display:flex;align-items:center;gap:10px;padding:14px 22px 20px}
+.seg-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.seg-lbl{width:92px;font-size:13px;color:var(--on-surface-var);flex:none}
+.seg-hint{font-size:11.5px;color:var(--on-surface-var)}
+.seg-b{width:40px;height:40px;border-radius:12px;border:1.5px solid var(--outline-var);background:transparent;color:var(--on-surface-var);font:700 15px Roboto,sans-serif;cursor:pointer;transition:.12s}
+.seg-b.sel{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.seg-g{display:flex;gap:8px;flex-wrap:wrap}
+.mode-t{display:flex;gap:6px}
+select,input[type="date"]{background:var(--card);color:var(--on-surface);border:1px solid var(--outline-var);border-radius:10px;padding:9px 10px;font:400 14px Roboto,sans-serif;outline:none}
+.done-t{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--on-surface-var);cursor:pointer}
+.help-q{border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:1.45}
+.help-q b{font-size:13.5px}
+.mini{display:grid;grid-template-columns:22px repeat(4,1fr);gap:4px}
+.mg-num{display:grid;place-items:center;font-size:11px;color:var(--on-surface-var)}
+.mg-cell{height:34px;border-radius:8px}
+.mg-cell.q1{background:var(--q1)}.mg-cell.q2{background:var(--q2)}.mg-cell.q3{background:var(--q3)}.mg-cell.q4{background:var(--q4)}
+.mg-caps{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--on-surface-var);margin-top:4px;flex-wrap:wrap}
+.code-box{border:1px solid var(--outline-var);border-radius:14px;overflow:hidden}
+.code-bar{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface-2);font-size:13px;font-weight:500;color:var(--on-surface-var)}
+.code-bar .msi{font-size:17px}
+.code-box pre{margin:0;padding:12px 14px;font:11.5px/1.55 'Roboto Mono',Consolas,monospace;overflow:auto;max-height:200px;color:var(--on-surface)}
+.import-result{border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.5}
+.import-result.err{background:var(--error-container);color:var(--on-error-container)}
+.import-result.okk{background:var(--success-container);color:var(--on-success-container)}
+#snackbar{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(24px);background:var(--snack-bg);color:var(--snack-fg);display:flex;align-items:center;gap:11px;padding:13px 20px;border-radius:14px;box-shadow:var(--elev2);opacity:0;pointer-events:none;transition:.28s;z-index:200;max-width:min(92vw,500px);font-size:14px}
+#snackbar.show{opacity:1;transform:translateX(-50%)}
+#snackbar .msi{font-size:20px;color:var(--primary)}
+html[data-theme="dark"] #snackbar .msi{color:#6750A4}
+.empty-note{text-align:center;color:var(--on-surface-var);padding:40px 12px;font-size:14px;border:2px dashed var(--outline-var);border-radius:18px}
+@media(max-width:640px){
+  .cell{min-height:72px}
+  .seg-lbl{width:100%}
+  .brand small{display:none}
+}
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="appbar-inner">
+    <div class="brand"><span class="msi">grid_4x4</span><b>Квадрат дел</b><small>· важность × срочность × сложность</small></div>
+    <span class="spacer"></span>
+    <button class="icon-btn ripple" id="helpBtn" title="Как читать квадрат"><span class="msi">help</span></button>
+    <button class="icon-btn ripple" id="exportBtn" title="Экспорт JSON"><span class="msi">file_download</span></button>
+    <button class="icon-btn ripple" id="importBtn" title="Импорт JSON"><span class="msi">file_upload</span></button>
+    <button class="icon-btn ripple" id="themeBtn" title="Тема"><span class="msi">dark_mode</span></button>
+  </div>
+</header>
+
+<main>
+  <div class="scope-row" id="scopeRow"></div>
+  <div class="toolbar">
+    <button class="icon-btn ripple sel" id="viewGridBtn" title="Квадрат"><span class="msi">grid_4x4</span></button>
+    <button class="icon-btn ripple" id="viewListBtn" title="Список по сложности"><span class="msi">format_list_numbered</span></button>
+    <button class="chip-f" id="sortBtn" hidden>сложность ↓</button>
+    <button class="chip-f" id="partBtn" title="Режим частичного выполнения задач">части: выкл</button>
+    <button class="chip-f" id="groupBtn" hidden title="Группировать задачи по блокам">по блокам: выкл</button>
+    <span class="spacer"></span>
+    <button class="btn btn-tonal ripple" id="addBlockBtn"><span class="msi">workspaces</span>Блок</button>
+    <button class="btn btn-filled ripple" id="addTaskBtn"><span class="msi">add</span>Задача</button>
+  </div>
+  <div id="scopeHeader"></div>
+  <div id="viewBox"></div>
+</main>
+
+<!-- Справка по квадрату -->
+<div class="scrim" id="helpDialog">
+  <div class="dialog" role="dialog" aria-modal="true">
+    <div class="dlg-head"><h3>Как читать квадрат дел</h3><button class="icon-btn ripple" data-close="helpDialog"><span class="msi">close</span></button></div>
+    <div class="dlg-body">
+      <p style="font-size:14px;color:var(--on-surface-var);line-height:1.5">По горизонтали — <b>срочность</b>: 1 — можно ждать, 4 — прямо сейчас. По вертикали — <b>важность</b>: 1 — неважно, 4 — критично. Задача попадает в клетку на пересечении своих значений, а четверти подсказывают стратегию. Вот схема сетки с осями:</p>
+      <div class="mini" aria-hidden="true">
+        <span class="mg-num"></span><span class="mg-num">1</span><span class="mg-num">2</span><span class="mg-num">3</span><span class="mg-num">4</span>
+        <span class="mg-num">4</span><span class="mg-cell q2"></span><span class="mg-cell q2"></span><span class="mg-cell q1"></span><span class="mg-cell q1"></span>
+        <span class="mg-num">3</span><span class="mg-cell q2"></span><span class="mg-cell q2"></span><span class="mg-cell q1"></span><span class="mg-cell q1"></span>
+        <span class="mg-num">2</span><span class="mg-cell q4"></span><span class="mg-cell q4"></span><span class="mg-cell q3"></span><span class="mg-cell q3"></span>
+        <span class="mg-num">1</span><span class="mg-cell q4"></span><span class="mg-cell q4"></span><span class="mg-cell q3"></span><span class="mg-cell q3"></span>
+      </div>
+      <div class="mg-caps"><span>↑ важность (цифры слева, 1–4)</span><span>срочность → (цифры сверху, 1–4)</span></div>
+      <div class="help-q" style="background:var(--q1)"><b>Важно и срочно — делать сразу.</b><span>Примеры: «оплатить счёт сегодня», «починить баг до релиза», «записаться к врачу с острой болью».</span></div>
+      <div class="help-q" style="background:var(--q2)"><b>Важно, не срочно — запланировать.</b><span>Примеры: «учить язык», «плановый чекап», «написать курсовую». Это зона роста: если её забросить, всё станет «срочно».</span></div>
+      <div class="help-q" style="background:var(--q3)"><b>Не важно, срочно — делать быстро или делегировать.</b><span>Примеры: «ответить на необязательное письмо», «помочь с тем, что не твоя зона».</span></div>
+      <div class="help-q" style="background:var(--q4)"><b>Не важно и не срочно — под вопросом.</b><span>Примеры: «листать ленту», «разобрать мемы». Кандидаты на вычеркивание.</span></div>
+      <p style="font-size:13px;color:var(--on-surface-var);line-height:1.5">Если у задачи указана дата, срочность пересчитывается сама (сегодня/просрочено = 4, ≤3 дней = 3, ≤7 = 2, дальше = 1), и задача постепенно переезжает по квадрату в «горячую» зону.</p>
+      <p style="font-size:13px;color:var(--on-surface-var);line-height:1.5"><b>А где же сложность?</b> Её в квадрате нет — и это осознанное решение. Квадрат отвечает на вопрос «что делать раньше», а сложность — третье измерение для списка: четыре палочки-сегмента в строке задачи и сортировка «сначала трудные / сначала лёгкие». То есть квадрат выбирает приоритет, список по сложности — удобный порядок работы.</p>
+    </div>
+    <div class="dlg-foot"><button class="btn btn-tonal ripple" data-close="helpDialog">Понятно</button></div>
+  </div>
+</div>
+
+<!-- Диалог задачи -->
+<div class="scrim" id="taskDialog">
+  <div class="dialog" role="dialog" aria-modal="true">
+    <div class="dlg-head"><h3 id="tdHead">Новая задача</h3><button class="icon-btn ripple" data-close="taskDialog"><span class="msi">close</span></button></div>
+    <div class="dlg-body">
+      <div class="field"><input id="tdText" placeholder=" " maxlength="200" autocomplete="off"><label>Текст задачи *</label></div>
+      <div class="seg-row"><span class="seg-lbl">Важность</span><div class="seg-g" id="tdImp"></div><span class="seg-hint">1 — неважно · 4 — критично</span></div>
+      <div class="seg-row"><span class="seg-lbl">Срочность</span>
+        <div class="mode-t">
+          <button class="chip-f" id="tdModeScale">шкала</button>
+          <button class="chip-f" id="tdModeDate">дата</button>
+        </div>
+      </div>
+      <div class="seg-row" id="tdScaleWrap"><span class="seg-lbl"></span><div class="seg-g" id="tdUrg"></div><span class="seg-hint">1 — может ждать · 4 — прямо сейчас</span></div>
+      <div class="seg-row" id="tdDateWrap" hidden><span class="seg-lbl">Дата</span><input type="date" id="tdDate"><span class="chip" id="tdDateUrg"></span><span class="seg-hint">чем ближе дата, тем выше срочность (считается сама)</span></div>
+      <div class="seg-row"><span class="seg-lbl">Сложность</span><div class="seg-g" id="tdDif"></div><span class="seg-hint">1 — легко · 4 — трудно</span></div>
+      <div class="seg-row"><span class="seg-lbl">Блок</span><select id="tdBlock"></select><button class="btn btn-tonal sm ripple" id="tdNewBlockBtn" type="button"><span class="msi">add</span>блок</button></div>
+      <div id="tdBlockNew" hidden style="border:1px dashed var(--outline-var);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px">
+        <div class="field"><input id="nbTitle" placeholder=" " maxlength="120" autocomplete="off"><label>Название нового блока *</label></div>
+        <div class="seg-row"><span class="seg-lbl">Начало</span><input type="date" id="nbStart"></div>
+        <div class="seg-row"><span class="seg-lbl">Конец</span><input type="date" id="nbEnd"><span class="chip">пусто = неограниченно</span></div>
+        <div class="seg-row"><button class="btn btn-filled sm ripple" id="nbSave" type="button"><span class="msi">check</span>Создать блок</button><button class="btn btn-text sm ripple" id="nbCancel" type="button">Скрыть</button></div>
+      </div>
+      <div class="seg-row" id="tdProgWrap" hidden><span class="seg-lbl">Выполнение</span><div class="seg-g" id="tdProg"></div><span class="seg-hint">100% = задача выполнена</span></div>
+      <label class="done-t" id="tdDoneWrap"><input type="checkbox" id="tdDone"> выполнено</label>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn btn-text danger ripple" id="tdDelete"><span class="msi">delete</span>Удалить</button>
+      <span class="spacer"></span>
+      <button class="btn btn-text ripple" data-close="taskDialog">Отмена</button>
+      <button class="btn btn-filled ripple" id="tdSave"><span class="msi">check</span>Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Диалог блока -->
+<div class="scrim" id="blockDialog">
+  <div class="dialog" role="dialog" aria-modal="true">
+    <div class="dlg-head"><h3 id="bdHead">Новый блок</h3><button class="icon-btn ripple" data-close="blockDialog"><span class="msi">close</span></button></div>
+    <div class="dlg-body">
+      <div class="field"><input id="bdTitle" placeholder=" " maxlength="120" autocomplete="off"><label>Название блока *</label></div>
+      <div class="seg-row"><span class="seg-lbl">Начало</span><input type="date" id="bdStart"></div>
+      <div class="seg-row"><span class="seg-lbl">Конец</span><input type="date" id="bdEnd"><span class="chip">пусто = неограниченно</span></div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn btn-text danger ripple" id="bdDelete"><span class="msi">delete</span>Удалить</button>
+      <span class="spacer"></span>
+      <button class="btn btn-text ripple" data-close="blockDialog">Отмена</button>
+      <button class="btn btn-filled ripple" id="bdSave"><span class="msi">check</span>Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Импорт -->
+<div class="scrim" id="importDialog">
+  <div class="dialog" role="dialog" aria-modal="true">
+    <div class="dlg-head"><h3>Импорт плана</h3><button class="icon-btn ripple" data-close="importDialog"><span class="msi">close</span></button></div>
+    <div class="dlg-body">
+      <p style="font-size:14px;color:var(--on-surface-var);line-height:1.5">Записи загружаются из JSON — из файла или вставленного текста. Задачи привязываются к блокам по названию в поле «block» («null» — без блока). Шаблон структуры:</p>
+      <div class="code-box">
+        <div class="code-bar"><span class="msi">code</span>Шаблон JSON<span class="spacer"></span>
+          <button class="btn btn-text sm ripple" id="copyTpl"><span class="msi">content_copy</span>Копировать</button>
+          <button class="btn btn-text sm ripple" id="dlTpl"><span class="msi">file_download</span>Скачать</button>
+        </div>
+        <pre id="tplPre"></pre>
+      </div>
+      <div class="seg-row">
+        <button class="btn btn-tonal sm ripple" id="pickJsonBtn"><span class="msi">description</span><span id="jsonFileLbl">Выбрать файл .json</span></button>
+        <span style="font-size:13px;color:var(--on-surface-var)">или вставьте JSON ниже</span>
+      </div>
+      <div class="field"><input id="importText" placeholder=" " autocomplete="off" spellcheck="false"><label>JSON</label></div>
+      <div class="import-result" id="importResult" hidden></div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn btn-text ripple" data-close="importDialog">Отмена</button>
+      <button class="btn btn-filled ripple" id="doImportBtn"><span class="msi">file_upload</span>Импортировать</button>
+    </div>
+  </div>
+</div>
+
+<!-- Подтверждение -->
+<div class="scrim" id="confirmDialog">
+  <div class="dialog" role="dialog" aria-modal="true">
+    <div class="dlg-head"><h3 id="confirmTitle"></h3></div>
+    <div class="dlg-body"><p id="confirmText" style="font-size:14px;color:var(--on-surface-var);line-height:1.5"></p></div>
+    <div class="dlg-foot">
+      <button class="btn btn-text ripple" data-close="confirmDialog">Отмена</button>
+      <button class="btn btn-filled ripple" id="confirmOk" style="background:var(--error);color:var(--on-error)">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+<div id="snackbar"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s);};
+function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function uid(){return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function clamp4(v){v=Math.round(Number(v));return (v>=1&&v<=4)?v:2;}
+function clampProg(v){v=Math.round(Number(v)||0);return Math.max(0,Math.min(100,v));}
+var dfmt=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short'});
+
+/* ---------- данные ---------- */
+var KEY='quadplan.v1';
+var state={settings:{view:'grid',sortDir:'desc',partialMode:false},tasks:[],blocks:[]};
+(function(){try{var r=localStorage.getItem(KEY);if(r){var d=JSON.parse(r);if(d&&Array.isArray(d.tasks)&&Array.isArray(d.blocks))state=d;}}catch(e){}})();
+state.settings=state.settings||{};
+if(state.settings.partialMode==null)state.settings.partialMode=false;
+if(state.settings.groupByBlock==null)state.settings.groupByBlock=false;
+state.tasks.forEach(function(t){if(t.prog==null)t.prog=t.done?100:0;}); /* миграция со старой версии */
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){snack('Не удалось сохранить: хранилище переполнено','warning');}}
+function isDone(t){return (t.prog||0)>=100;}
+function avgProg(ts){if(!ts.length)return 0;return ts.reduce(function(s,t){return s+(t.prog||0);},0)/ts.length;}
+
+/* ---------- время ---------- */
+function daysUntil(ds){
+  if(!ds)return null;
+  var d=new Date(ds+'T00:00:00'),t=new Date();t.setHours(0,0,0,0);
+  return Math.round((d-t)/86400000);
+}
+function effUrgency(t){
+  if(t.urgMode==='date'&&t.date){
+    var d=daysUntil(t.date);
+    if(d===null)return clamp4(t.urgency);
+    if(d<=0)return 4; if(d<=3)return 3; if(d<=7)return 2; return 1;
+  }
+  return clamp4(t.urgency);
+}
+function isOver(t){return !isDone(t)&&t.urgMode==='date'&&t.date&&daysUntil(t.date)<0;}
+
+/* ---------- блоки: живые статусы ---------- */
+function tasksOf(bid){return state.tasks.filter(function(t){return t.blockId===bid;});}
+function evaluateBlocks(){
+  var ch=false;
+  state.blocks.forEach(function(b){
+    var ts=tasksOf(b.id);
+    if(!ts.length)return;
+    var avg=avgProg(ts),st;
+    if(avg>=100)st='done';
+    else if(b.end&&daysUntil(b.end)<0)st=(avg<=0?'overdue':'partial');
+    else st='active';
+    if(b.status!==st){b.status=st;ch=true;}
+  });
+  if(ch)save();
+  return ch;
+}
+function blockSoon(b){return b.status==='active'&&b.end&&daysUntil(b.end)!==null&&daysUntil(b.end)<=2;}
+function stChip(b){
+  if(b.status==='done')return '<span class="chip ok">выполнен</span>';
+  if(b.status==='overdue')return '<span class="chip err">просрочен</span>';
+  if(b.status==='partial')return '<span class="chip part">частично</span>';
+  if(blockSoon(b))return '<span class="chip warn">скоро конец</span>';
+  return '';
+}
+function stDot(b){
+  return b.status==='done'?'var(--success)':b.status==='overdue'?'var(--error)':b.status==='partial'?'#B25E09':(blockSoon(b)?'var(--warn)':'var(--primary)');
+}
+
+/* ---------- область и виды ---------- */
+var scope={type:'all'};
+function scopeTasks(){
+  if(scope.type==='all')return state.tasks.filter(function(t){return !isDone(t);});
+  if(scope.type==='archive')return state.tasks.filter(isDone);
+  return tasksOf(scope.id);
+}
+function render(){
+  evaluateBlocks();
+  renderScope();
+  renderHeader();
+  $('#sortBtn').hidden=state.settings.view!=='list';
+  $('#sortBtn').textContent='сложность '+(state.settings.sortDir==='desc'?'↓':'↑');
+  $('#sortBtn').classList.toggle('active',state.settings.view==='list');
+  $('#partBtn').textContent='части: '+(state.settings.partialMode?'вкл':'выкл');
+  $('#partBtn').classList.toggle('active',state.settings.partialMode);
+  $('#viewGridBtn').classList.toggle('sel',state.settings.view==='grid');
+  $('#viewListBtn').classList.toggle('sel',state.settings.view==='list');
+  var showGroup=scope.type==='all';
+  $('#groupBtn').hidden=!showGroup;
+  if(showGroup){
+    $('#groupBtn').textContent='по блокам: '+(state.settings.groupByBlock?'вкл':'выкл');
+    $('#groupBtn').classList.toggle('active',state.settings.groupByBlock);
+  }
+  if(scope.type==='archive')renderArchive();
+  else if(showGroup&&state.settings.groupByBlock)renderGrouped();
+  else if(state.settings.view==='grid')renderGrid();else renderList();
+}
+function renderScope(){
+  var h='<button class="chip-f'+(scope.type==='all'?' active':'')+'" data-scope="all">Все задачи</button>';
+  state.blocks.forEach(function(b){
+    if(b.status!=='active'&&!(scope.type==='block'&&scope.id===b.id))return; /* закрытые блоки уходят в архив */
+    var open=tasksOf(b.id).filter(function(t){return !isDone(t);}).length;
+    h+='<button class="chip-f'+(scope.type==='block'&&scope.id===b.id?' active':'')+'" data-scope="'+b.id+'">'+
+       '<span class="dot" style="background:'+stDot(b)+'"></span>'+esc(b.title)+(b.status==='active'?' · '+open:'')+'</button>';
+  });
+  h+='<button class="chip-f'+(scope.type==='archive'?' active':'')+'" data-scope="archive">Архив</button>';
+  $('#scopeRow').innerHTML=h;
+}
+function renderHeader(){
+  var box=$('#scopeHeader');
+  if(scope.type==='block'){
+    var b=state.blocks.find(function(x){return x.id===scope.id;});
+    if(!b){box.innerHTML='';return;}
+    var ts=tasksOf(b.id);
+    var pct=Math.round(avgProg(ts));
+    var done=ts.filter(isDone).length;
+    var period=(b.start?dfmt.format(new Date(b.start+'T00:00:00')):'…')+' — '+(b.end?dfmt.format(new Date(b.end+'T00:00:00')):'неограниченно');
+    box.innerHTML='<div class="block-banner"><div class="bb-head"><h2>'+esc(b.title)+'</h2>'+stChip(b)+
+      '<span class="chip">'+period+'</span><span class="chip">'+pct+'%</span>'+
+      '<span class="spacer"></span><button class="btn btn-text sm ripple" data-editblock="'+b.id+'"><span class="msi">edit</span>Изменить</button></div>'+
+      '<div class="pbar"><i style="width:'+pct+'%"></i></div></div>';
+  } else box.innerHTML='';
+}
+function taskChip(t){
+  var suf=(state.settings.partialMode&&(t.prog||0)>0&&!isDone(t))?' · '+(t.prog||0)+'%':'';
+  return '<button class="t-chip'+(isOver(t)?' over':'')+(isDone(t)?' done':'')+'" data-task="'+t.id+'" title="'+esc(t.text)+'">'+esc(t.text)+suf+'</button>';
+}
+function gridFor(ts){
+  var h='<p class="ax-cap">↑ важность</p><div class="grid4">';
+  for(var imp=4;imp>=1;imp--){
+    for(var urg=1;urg<=4;urg++){
+      var q=(imp>=3)?(urg>=3?'q1':'q2'):(urg>=3?'q3':'q4');
+      h+='<div class="cell '+q+'">';
+      ts.forEach(function(t){
+        if(effUrgency(t)===urg&&clamp4(t.importance)===imp)h+=taskChip(t);
+      });
+      h+='</div>';
+    }
+  }
+  return h+'</div><p class="ax-cap right">срочность →</p>';
+}
+function renderGrid(){
+  var ts=scopeTasks();
+  var box=$('#viewBox');
+  if(!ts.length){box.innerHTML='<div class="empty-note">Здесь пусто. Добавьте задачу кнопкой «+ Задача».<br>Кнопка «?» в шапке объясняет, как читать квадрат.</div>';return;}
+  box.innerHTML=gridFor(ts);
+}
+function plTasks(n){var m10=n%10,m100=n%100;if(m10===1&&m100!==11)return 'задача';if(m10>=2&&m10<=4&&(m100<12||m100>14))return 'задачи';return 'задач';}
+function renderArchive(){
+  var box=$('#viewBox'),h='';
+  var closed=state.blocks.filter(function(b){return b.status!=='active';});
+  if(closed.length){
+    h+='<div class="grp-head" style="margin-bottom:10px"><b>Выполненные блоки</b><span class="chip">'+closed.length+'</span></div>';
+    h+=closed.map(function(b){
+      var ts=tasksOf(b.id),pct=Math.round(avgProg(ts));
+      return '<div class="l-row" data-openblock="'+b.id+'" style="cursor:pointer">'+
+        '<span style="background:'+stDot(b)+';width:10px;height:10px;border-radius:50%;flex:none"></span>'+
+        '<div class="l-main"><div class="l-text">'+esc(b.title)+'</div>'+
+        '<div class="l-chips">'+stChip(b)+
+        '<span class="chip">'+(b.start?dfmt.format(new Date(b.start+'T00:00:00')):'…')+' — '+(b.end?dfmt.format(new Date(b.end+'T00:00:00')):'∞')+'</span>'+
+        '<span class="chip">'+pct+'%</span><span class="chip">'+ts.length+' '+plTasks(ts.length)+'</span></div></div>'+
+        '<span class="msi" style="color:var(--on-surface-var)">chevron_right</span></div>';
+    }).join('');
+  }
+  var doneTasks=state.tasks.filter(isDone);
+  if(doneTasks.length){
+    h+='<div class="grp-head" style="margin:18px 0 8px"><b>Выполненные задачи</b><span class="chip">'+doneTasks.length+'</span></div>';
+    h+=(state.settings.view==='grid')?gridFor(doneTasks):listFor(doneTasks);
+  }
+  if(!h){box.innerHTML='<div class="empty-note">Архив пока пуст.</div>';return;}
+  box.innerHTML=h;
+}
+function renderGrouped(){
+  var box=$('#viewBox'),h='';
+  state.blocks.forEach(function(b){
+    var ts=tasksOf(b.id).filter(function(t){return !isDone(t);});
+    if(!ts.length)return;
+    h+='<section class="grp"><div class="grp-head"><span class="dot" style="background:'+stDot(b)+'"></span><b>'+esc(b.title)+'</b>'+stChip(b)+'<span class="chip">'+ts.length+'</span></div>'+
+       (state.settings.view==='grid'?gridFor(ts):listFor(ts))+'</section>';
+  });
+  var nb=state.tasks.filter(function(t){return !isDone(t)&&!t.blockId;});
+  if(nb.length){
+    h+='<section class="grp"><div class="grp-head"><b>Без блока</b><span class="chip">'+nb.length+'</span></div>'+
+       (state.settings.view==='grid'?gridFor(nb):listFor(nb))+'</section>';
+  }
+  if(!h){box.innerHTML='<div class="empty-note">Здесь пусто. Добавьте задачу кнопкой «+ Задача».</div>';return;}
+  box.innerHTML=h;
+}
+function segHTML(n){
+  var s='<span class="seg">';
+  for(var i=1;i<=4;i++)s+='<i class="'+(i<=n?'on':'')+'"></i>';
+  return s+'</span>';
+}
+function listFor(src){
+  var ts=src.slice();
+  ts.sort(function(a,b){return state.settings.sortDir==='desc'?clamp4(b.difficulty)-clamp4(a.difficulty):clamp4(a.difficulty)-clamp4(b.difficulty);});
+  var pm=state.settings.partialMode;
+  return ts.map(function(t){
+    var b=t.blockId?state.blocks.find(function(x){return x.id===t.blockId;}):null;
+    var ctrl=pm
+      ? '<div class="step"><button class="step-b" data-dec="'+t.id+'" title="−25%">−</button><span class="chip">'+(t.prog||0)+'%</span><button class="step-b" data-inc="'+t.id+'" title="+25%">+</button></div>'
+      : '<button class="done-b'+(isDone(t)?' on':'')+'" data-done="'+t.id+'" title="Отметить выполнение"><span class="msi">check</span></button>';
+    return '<div class="l-row'+(isOver(t)?' over':'')+(isDone(t)?' done':'')+'">'+ctrl+
+      '<div class="l-main"><div class="l-text">'+esc(t.text)+'</div>'+
+      '<div class="l-chips">'+segHTML(clamp4(t.difficulty))+
+        '<span class="chip i'+clamp4(t.importance)+'">важн. '+clamp4(t.importance)+'</span>'+
+        (t.urgMode==='date'&&t.date?'<span class="chip '+(isOver(t)?'err':'u'+effUrgency(t))+'">до '+dfmt.format(new Date(t.date+'T00:00:00'))+' · ср. '+effUrgency(t)+'</span>':'<span class="chip u'+effUrgency(t)+'">ср. '+effUrgency(t)+'</span>')+
+        (b?'<span class="chip">'+esc(b.title)+'</span>':'')+
+      '</div></div>'+
+      '<button class="icon-btn ripple" data-deltask="'+t.id+'" title="Удалить задачу" style="color:var(--error)"><span class="msi">delete</span></button>'+
+      '<button class="icon-btn ripple" data-task="'+t.id+'" title="Редактировать"><span class="msi">edit</span></button>'+
+    '</div>';
+  }).join('');
+}
+function renderList(){
+  var ts=scopeTasks();
+  var box=$('#viewBox');
+  if(!ts.length){box.innerHTML='<div class="empty-note">Здесь пусто. Добавьте задачу кнопкой «+ Задача».</div>';return;}
+  box.innerHTML=listFor(ts);
+}
+
+/* ---------- диалог задачи ---------- */
+var td=null;
+function segButtons(cur,kind){
+  var s='';for(var i=1;i<=4;i++)s+='<button type="button" class="seg-b'+(kind?' '+kind+i:'')+(i===cur?' sel':'')+'" data-v="'+i+'">'+i+'</button>';
+  return s;
+}
+function progButtons(cur){
+  return [0,25,50,75,100].map(function(v){
+    return '<button type="button" class="seg-b'+(v===cur?' sel':'')+'" data-p="'+v+'" style="width:auto;padding:0 10px">'+v+'%</button>';
+  }).join('');
+}
+function paintTaskDlg(){
+  var pm=state.settings.partialMode;
+  $('#tdImp').innerHTML=segButtons(clamp4(td.importance),'i');
+  $('#tdUrg').innerHTML=segButtons(clamp4(td.urgency),'u');
+  $('#tdDif').innerHTML=segButtons(clamp4(td.difficulty));
+  $('#tdModeScale').classList.toggle('active',td.urgMode!=='date');
+  $('#tdModeDate').classList.toggle('active',td.urgMode==='date');
+  $('#tdScaleWrap').hidden=td.urgMode==='date';
+  $('#tdDateWrap').hidden=td.urgMode!=='date';
+  $('#tdDate').value=td.date||'';
+  $('#tdDateUrg').textContent=td.urgMode==='date'&&td.date?('срочность: '+effUrgency(td)):'срочность: —';
+  $('#tdProgWrap').hidden=!pm;
+  $('#tdDoneWrap').hidden=pm;
+  if(pm)$('#tdProg').innerHTML=progButtons(clampProg(td.prog));
+  else $('#tdDone').checked=isDone(td);
+  paintBlockSelect();
+}
+function paintBlockSelect(){
+  var sel=$('#tdBlock');
+  sel.innerHTML='<option value="">без блока</option>'+state.blocks.filter(function(b){return b.status==='active';}).map(function(b){
+    return '<option value="'+b.id+'"'+(td.blockId===b.id?' selected':'')+'>'+esc(b.title)+'</option>';
+  }).join('');
+}
+function openTaskDlg(id){
+  if(id){var t=state.tasks.find(function(x){return x.id===id;});td=JSON.parse(JSON.stringify(t));$('#tdHead').textContent='Задача';$('#tdDelete').hidden=false;}
+  else{td={id:null,text:'',importance:3,urgency:2,urgMode:'scale',date:'',difficulty:2,blockId:scope.type==='block'?scope.id:null,prog:0};$('#tdHead').textContent='Новая задача';$('#tdDelete').hidden=true;}
+  $('#tdText').value=td.text;
+  $('#tdBlockNew').hidden=true;
+  paintTaskDlg();
+  openScrim('taskDialog');
+  setTimeout(function(){$('#tdText').focus();},200);
+}
+$('#tdImp').addEventListener('click',function(e){var b=e.target.closest('[data-v]');if(b){td.importance=+b.dataset.v;paintTaskDlg();}});
+$('#tdUrg').addEventListener('click',function(e){var b=e.target.closest('[data-v]');if(b){td.urgency=+b.dataset.v;paintTaskDlg();}});
+$('#tdDif').addEventListener('click',function(e){var b=e.target.closest('[data-v]');if(b){td.difficulty=+b.dataset.v;paintTaskDlg();}});
+$('#tdProg').addEventListener('click',function(e){var b=e.target.closest('[data-p]');if(b){td.prog=+b.dataset.p;paintTaskDlg();}});
+$('#tdNewBlockBtn').onclick=function(){var box=$('#tdBlockNew');box.hidden=!box.hidden;if(!box.hidden){$('#nbTitle').value='';$('#nbStart').value='';$('#nbEnd').value='';$('#nbTitle').focus();}};
+$('#nbCancel').onclick=function(){$('#tdBlockNew').hidden=true;};
+$('#nbSave').onclick=function(){
+  var title=$('#nbTitle').value.trim();
+  if(!title){snack('Напишите название блока','warning');return;}
+  var b={id:uid(),title:title,start:$('#nbStart').value||'',end:$('#nbEnd').value||'',status:'active'};
+  state.blocks.push(b);save();
+  td.blockId=b.id;
+  paintBlockSelect();
+  $('#tdBlockNew').hidden=true;
+  render();
+  snack('Блок создан и привязан к задаче','workspaces');
+};
+$('#tdModeScale').onclick=function(){td.urgMode='scale';paintTaskDlg();};
+$('#tdModeDate').onclick=function(){td.urgMode='date';paintTaskDlg();};
+$('#tdDate').addEventListener('change',function(e){td.date=e.target.value;paintTaskDlg();});
+$('#tdSave').onclick=function(){
+  var text=$('#tdText').value.trim();
+  if(!text){snack('Напишите текст задачи','warning');return;}
+  td.text=text;td.blockId=$('#tdBlock').value||null;
+  if(!state.settings.partialMode)td.prog=$('#tdDone').checked?100:0;
+  td.prog=clampProg(td.prog);
+  if(td.id){var i=state.tasks.findIndex(function(x){return x.id===td.id;});state.tasks[i]=td;}
+  else{td.id=uid();state.tasks.push(td);}
+  save();closeScrim('taskDialog');render();
+  snack(isDone(td)?'Задача выполнена':'Задача сохранена','check_circle');
+};
+$('#tdDelete').onclick=function(){
+  askConfirm('Удалить задачу?','«'+td.text+'» будет удалена.','Удалить',function(){
+    state.tasks=state.tasks.filter(function(x){return x.id!==td.id;});
+    save();closeScrim('taskDialog');render();snack('Задача удалена','delete');
+  });
+};
+
+/* ---------- диалог блока ---------- */
+var bd=null;
+function openBlockDlg(id){
+  if(id){var b=state.blocks.find(function(x){return x.id===id;});bd=JSON.parse(JSON.stringify(b));$('#bdHead').textContent='Блок';$('#bdDelete').hidden=false;}
+  else{bd={id:null,title:'',start:'',end:'',status:'active'};$('#bdHead').textContent='Новый блок';$('#bdDelete').hidden=true;}
+  $('#bdTitle').value=bd.title;$('#bdStart').value=bd.start||'';$('#bdEnd').value=bd.end||'';
+  openScrim('blockDialog');
+}
+$('#bdSave').onclick=function(){
+  var title=$('#bdTitle').value.trim();
+  if(!title){snack('Напишите название блока','warning');return;}
+  bd.title=title;bd.start=$('#bdStart').value||'';bd.end=$('#bdEnd').value||'';
+  if(bd.id){var i=state.blocks.findIndex(function(x){return x.id===bd.id;});state.blocks[i]=bd;}
+  else{bd.id=uid();state.blocks.push(bd);}
+  save();closeScrim('blockDialog');render();snack('Блок сохранён','workspaces');
+};
+$('#bdDelete').onclick=function(){
+  askConfirm('Удалить блок?','Блок «'+bd.title+'» будет удалён; его задачи останутся без блока.','Удалить',function(){
+    state.tasks.forEach(function(t){if(t.blockId===bd.id)t.blockId=null;});
+    state.blocks=state.blocks.filter(function(x){return x.id!==bd.id;});
+    if(scope.type==='block'&&scope.id===bd.id)scope={type:'all'};
+    save();closeScrim('blockDialog');render();snack('Блок удалён','delete');
+  });
+};
+
+/* ---------- экспорт / импорт ---------- */
+var TPL='{\n  "app": "QuadPlan",\n  "version": 1,\n  "blocks": [\n    { "title": "Выходные проекты", "start": "2026-08-08", "end": "2026-08-09" }\n  ],\n  "tasks": [\n    {\n      "text": "Подготовить презентацию",\n      "importance": 4,\n      "urgency": 3,\n      "difficulty": 2,\n      "block": "Выходные проекты",\n      "prog": 0\n    },\n    {\n      "text": "Сделать резервную копию",\n      "importance": 3,\n      "urgencyMode": "date",\n      "date": "2026-08-10",\n      "difficulty": 1,\n      "block": null,\n      "prog": 50\n    }\n  ]\n}';
+function openImportDialog(){
+  $('#importText').value='';$('#importFile').value='';$('#jsonFileLbl').textContent='Выбрать файл .json';
+  var r=$('#importResult');r.hidden=true;
+  $('#tplPre').textContent=TPL;
+  openScrim('importDialog');
+}
+$('#importBtn').onclick=openImportDialog;
+$('#helpBtn').onclick=function(){openScrim('helpDialog');};
+$('#copyTpl').onclick=function(){
+  var done=function(){snack('Шаблон скопирован','content_copy');};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(TPL).then(done).catch(fb);else fb();
+  function fb(){var ta=document.createElement('textarea');ta.value=TPL;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}ta.remove();}
+};
+$('#dlTpl').onclick=function(){
+  var blob=new Blob([TPL],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='quadplan-template.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},800);
+  snack('Шаблон сохранён','file_download');
+};
+$('#pickJsonBtn').onclick=function(){$('#importFile').click();};
+$('#importFile').addEventListener('change',function(e){var f=e.target.files[0];$('#jsonFileLbl').textContent=f?f.name:'Выбрать файл .json';});
+$('#doImportBtn').onclick=function(){
+  var f=$('#importFile').files[0];
+  if(f){var r=new FileReader();r.onload=function(){doImport(String(r.result));};r.readAsText(f);}
+  else doImport($('#importText').value);
+};
+function doImport(text){
+  var box=$('#importResult');
+  if(!text.trim()){box.hidden=false;box.className='import-result err';box.textContent='Вставьте JSON или выберите файл.';return;}
+  var d;try{d=JSON.parse(text);}catch(e){box.hidden=false;box.className='import-result err';box.textContent='JSON не распознан: '+e.message;return;}
+  var titleMap={};
+  state.blocks.forEach(function(b){titleMap[b.title]=b.id;});
+  var nb=0,nt=0;
+  (Array.isArray(d.blocks)?d.blocks:[]).forEach(function(r){
+    if(!r||typeof r.title!=='string'||!r.title.trim())return;
+    var b={id:uid(),title:r.title.trim(),start:String(r.start||''),end:String(r.end||''),status:'active'};
+    state.blocks.push(b);titleMap[b.title]=b.id;nb++;
+  });
+  (Array.isArray(d.tasks)?d.tasks:[]).forEach(function(r){
+    if(!r||typeof r.text!=='string'||!r.text.trim())return;
+    state.tasks.push({id:uid(),text:r.text.trim().slice(0,200),
+      importance:clamp4(r.importance),urgency:clamp4(r.urgency),
+      urgMode:(r.urgencyMode==='date'&&r.date)?'date':'scale',
+      date:(r.urgencyMode==='date'&&r.date)?String(r.date):'',
+      difficulty:clamp4(r.difficulty),
+      blockId:(typeof r.block==='string'&&titleMap[r.block])?titleMap[r.block]:null,
+      prog:(r.prog!=null)?clampProg(r.prog):(r.done?100:0)});
+    nt++;
+  });
+  if(!nb&&!nt){box.hidden=false;box.className='import-result err';box.textContent='Не найдено ни задач, ни блоков (см. шаблон).';return;}
+  save();render();
+  box.hidden=false;box.className='import-result okk';box.textContent='Импортировано: блоков — '+nb+', задач — '+nt+'.';
+  setTimeout(function(){closeScrim('importDialog');},900);
+}
+$('#exportBtn').onclick=function(){
+  var payload={app:'QuadPlan',version:1,exportedAt:new Date().toISOString(),
+    blocks:state.blocks.map(function(b){return{title:b.title,start:b.start,end:b.end,status:b.status};}),
+    tasks:state.tasks.map(function(t){
+      var b=t.blockId?state.blocks.find(function(x){return x.id===t.blockId;}):null;
+      return{text:t.text,importance:t.importance,urgencyMode:t.urgMode,urgency:t.urgency,date:t.date||null,
+        difficulty:t.difficulty,block:b?b.title:null,prog:t.prog||0};
+    })};
+  var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='quadplan.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},800);
+  snack('План экспортирован в JSON','file_download');
+};
+
+/* ---------- клики ---------- */
+$('#scopeRow').addEventListener('click',function(e){
+  var b=e.target.closest('[data-scope]');if(!b)return;
+  var s=b.dataset.scope;
+  scope=(s==='all')?{type:'all'}:(s==='archive')?{type:'archive'}:{type:'block',id:s};
+  render();
+});
+$('#viewBox').addEventListener('click',function(e){
+  var ob=e.target.closest('[data-openblock]');
+  if(ob){scope={type:'block',id:ob.dataset.openblock};render();return;}
+  var dt=e.target.closest('[data-deltask]');
+  if(dt){
+    var idd=dt.dataset.deltask;
+    var tsk=state.tasks.find(function(x){return x.id===idd;});
+    askConfirm('Удалить задачу?','«'+(tsk?tsk.text:'')+'» будет удалена.','Удалить',function(){
+      state.tasks=state.tasks.filter(function(x){return x.id!==idd;});
+      save();render();snack('Задача удалена','delete');
+    });
+    return;
+  }
+  var c=e.target.closest('[data-task]');
+  if(c){openTaskDlg(c.dataset.task);return;}
+  var inc=e.target.closest('[data-inc]'),dec=e.target.closest('[data-dec]');
+  if(inc||dec){
+    var id=inc?inc.dataset.inc:dec.dataset.dec;
+    var t=state.tasks.find(function(x){return x.id===id;});
+    t.prog=clampProg((t.prog||0)+(inc?25:-25));
+    save();render();
+    if(isDone(t))snack('Задача выполнена','check_circle');
+    return;
+  }
+  var d=e.target.closest('[data-done]');
+  if(d){
+    var tt=state.tasks.find(function(x){return x.id===d.dataset.done;});
+    tt.prog=isDone(tt)?0:100;save();render();
+    if(isDone(tt))snack('Задача выполнена','check_circle');
+  }
+});
+$('#scopeHeader').addEventListener('click',function(e){
+  var b=e.target.closest('[data-editblock]');if(b)openBlockDlg(b.dataset.editblock);
+});
+$('#viewGridBtn').onclick=function(){state.settings.view='grid';save();render();};
+$('#viewListBtn').onclick=function(){state.settings.view='list';save();render();};
+$('#sortBtn').onclick=function(){state.settings.sortDir=state.settings.sortDir==='desc'?'asc':'desc';save();render();};
+$('#groupBtn').onclick=function(){state.settings.groupByBlock=!state.settings.groupByBlock;save();render();};
+$('#partBtn').onclick=function(){
+  state.settings.partialMode=!state.settings.partialMode;save();render();
+  snack(state.settings.partialMode?'Режим частей включён: выполнение задач можно указывать в процентах':'Режим частей выключен: задача либо выполнена, либо нет','pie_chart');
+};
+$('#addTaskBtn').onclick=function(){openTaskDlg(null);};
+$('#addBlockBtn').onclick=function(){openBlockDlg(null);};
+
+/* ---------- служебное ---------- */
+function openScrim(id){$('#'+id).classList.add('open');}
+function closeScrim(id){$('#'+id).classList.remove('open');}
+var confirmCb=null;
+function askConfirm(title,text,ok,cb){$('#confirmTitle').textContent=title;$('#confirmText').textContent=text;confirmCb=cb;openScrim('confirmDialog');}
+$('#confirmOk').onclick=function(){closeScrim('confirmDialog');var cb=confirmCb;confirmCb=null;if(cb)cb();};
+document.addEventListener('click',function(e){var c=e.target.closest('[data-close]');if(c)closeScrim(c.dataset.close);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')$$('.scrim.open').forEach(function(s){s.classList.remove('open');});});
+var snackT=null;
+function snack(msg,icon){var el=$('#snackbar');el.innerHTML='<span class="msi">'+(icon||'info')+'</span><span>'+esc(msg)+'</span>';el.classList.add('show');clearTimeout(snackT);snackT=setTimeout(function(){el.classList.remove('show');},3000);}
+document.addEventListener('pointerdown',function(e){
+  var el=e.target.closest('.ripple');if(!el)return;
+  var r=el.getBoundingClientRect(),d=Math.max(r.width,r.height)*2;
+  var s=document.createElement('span');s.className='ripple-ink';
+  s.style.width=s.style.height=d+'px';
+  s.style.left=(e.clientX-r.left-d/2)+'px';s.style.top=(e.clientY-r.top-d/2)+'px';
+  el.appendChild(s);setTimeout(function(){s.remove();},600);
+});
+/* ---------- тема ---------- */
+var themeManual=false;
+function applyTheme(th,persist){
+  document.documentElement.dataset.theme=th;
+  $('#themeBtn .msi').textContent=th==='dark'?'light_mode':'dark_mode';
+  if(persist){try{localStorage.setItem('quadplan.theme',th);}catch(e){}}
+}
+(function(){
+  var saved=null;try{saved=localStorage.getItem('quadplan.theme');}catch(e){}
+  applyTheme(saved||(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'),false);
+  if(saved)themeManual=true;
+  if(window.matchMedia){var mq=matchMedia('(prefers-color-scheme: dark)');
+    var f=function(e){if(!themeManual)applyTheme(e.matches?'dark':'light',false);};
+    if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f);}
+})();
+$('#themeBtn').onclick=function(){themeManual=true;applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark',true);};
+
+/* ---------- старт ---------- */
+setInterval(function(){if(evaluateBlocks())render();},60000);
+render();
+})();
+</script>
+</body>
+</html>
+
