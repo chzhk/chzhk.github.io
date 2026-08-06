@@ -99,6 +99,11 @@ body{font-family:Roboto,system-ui,sans-serif;background:var(--surface);color:var
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:grid;place-items:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
 .scrim.open{opacity:1;pointer-events:auto}
 .dialog{background:var(--card);border-radius:24px;max-width:520px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 44px rgba(0,0,0,.32);transform:scale(.94) translateY(10px);transition:transform .22s cubic-bezier(.2,0,0,1)}
+.dialog-bg-letter{
+  position:absolute;right:-20px;bottom:-40px;font-size:280px;font-weight:900;
+  color:var(--primary);opacity:.06;pointer-events:none;user-select:none;
+  line-height:1;transform:rotate(180deg);
+}
 .scrim.open .dialog{transform:none}
 .dlg-head{display:flex;align-items:center;gap:12px;padding:20px 22px 6px}
 .dlg-head h3{font-size:19px;font-weight:600;flex:1}
@@ -252,7 +257,8 @@ html[data-theme="dark"] #snackbar .msi{color:#6750A4}
 
 <!-- Подсказки -->
 <div class="scrim" id="helpDialog">
-  <div class="dialog">
+  <div class="dialog" style="position:relative;overflow:hidden">
+    <span class="dialog-bg-letter">К</span>
     <div class="dlg-head"><h3>Подсказки</h3><button class="icon-btn" data-close="helpDialog"><span class="msi">close</span></button></div>
     <div class="dlg-body">
       <p class="dlg-note">· Колесо мыши — масштаб к курсору; кнопки «+»/«−» и «вписать» — в тулбаре.</p>
