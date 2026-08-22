@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Пиксель</title>
+<title>Пиксель-холст</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%A8%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/400.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/500.css">
@@ -99,10 +99,9 @@ body{font-family:Roboto,system-ui,sans-serif;background:var(--surface);color:var
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:grid;place-items:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
 .scrim.open{opacity:1;pointer-events:auto}
 .dialog{background:var(--card);border-radius:24px;max-width:520px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 44px rgba(0,0,0,.32);transform:scale(.94) translateY(10px);transition:transform .22s cubic-bezier(.2,0,0,1)}
-.dialog-bg-letter{
-  position:absolute;right:-20px;bottom:-40px;font-size:280px;font-weight:900;
-  color:var(--primary);opacity:.06;pointer-events:none;user-select:none;
-  line-height:1;transform:rotate(180deg);
+.dialog-bg-cat{
+  position:absolute;left:8px;bottom:4px;width:140px;height:140px;
+  color:var(--primary);opacity:.09;pointer-events:none;user-select:none;
 }
 .scrim.open .dialog{transform:none}
 .dlg-head{display:flex;align-items:center;gap:12px;padding:20px 22px 6px}
@@ -258,7 +257,26 @@ html[data-theme="dark"] #snackbar .msi{color:#6750A4}
 <!-- Подсказки -->
 <div class="scrim" id="helpDialog">
   <div class="dialog" style="position:relative;overflow:hidden">
-    <span class="dialog-bg-letter">К</span>
+    <svg class="dialog-bg-cat" viewBox="0 0 200 200" fill="none" stroke="currentColor"
+         stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <!-- ушки -->
+      <path d="M50 66 L62 39 L77 54"/>
+      <path d="M122 59 L141 40 L149 70"/>
+      <!-- глаза -->
+      <ellipse cx="84.5" cy="81" rx="13.5" ry="20"/>
+      <ellipse cx="115" cy="81.5" rx="13.5" ry="20"/>
+      <path d="M84.5 74 L83.8 87.5"/>
+      <path d="M114.8 73.5 L115.2 87.5"/>
+      <!-- нос -->
+      <path d="M97.5 105 L97.8 111"/>
+      <!-- рот -->
+      <path d="M82 130.5 Q101 128.5 120 129.5"/>
+      <!-- усы -->
+      <path d="M65.5 127 L53.5 135.5"/>
+      <path d="M69 135.5 L60 153"/>
+      <path d="M135.5 122.5 L145 132"/>
+      <path d="M132 136 L138 153"/>
+    </svg>
     <div class="dlg-head"><h3>Подсказки</h3><button class="icon-btn" data-close="helpDialog"><span class="msi">close</span></button></div>
     <div class="dlg-body">
       <p class="dlg-note">· Колесо мыши — масштаб к курсору; кнопки «+»/«−» и «вписать» — в тулбаре.</p>
